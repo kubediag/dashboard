@@ -11,9 +11,9 @@
     <div class="page-left">
       <div class="logo">DAG-Board</div>
       <div
-        class="basic-node"
         v-for="(item, i) in initNodesBasic"
         :key="'nodes_basic' + i"
+        class="basic-node"
         @mousedown="dragIt(item)"
       >
         {{ item.name }}
@@ -22,37 +22,39 @@
 
     <!-- 顶栏 -->
     <div class="headbar">
-      <el-button type="primary" size="medium" @click="changeVersion"
-        >改变连线方向</el-button
-      >
+      <el-button
+        type="primary"
+        size="medium"
+        @click="changeVersion"
+      >切换连线方向</el-button>
     </div>
 
     <!-- 右侧表单 -->
-    <div class="right-form" v-show="updateDAGData">
+    <div v-show="updateDAGData" class="right-form">
       <div style="border-bottom: 1px solid; padding: 15px; text-align: right">
-        <span @click="closeJson" class="closeJson"
-          ><i class="el-icon-close"></i
-        ></span>
+        <span
+          class="closeJson"
+          @click="closeJson"
+        ><i class="el-icon-close" /></span>
         <el-button
           type="primary"
           size="mini"
           @click="handleCopy(updateDAGData, $event)"
-          >Copy JSON</el-button
-        >
+        >Copy JSON</el-button>
       </div>
       <div class="updateDAGDataBox">
-        <pre id="updateDAGData"></pre>
+        <pre id="updateDAGData" />
       </div>
     </div>
 
     <!-- DAG-Diagram主体 -->
     <DAGBoard
       ref="DAGBoard"
-      :DataAll="yourJSONDataFillThere"
+      :data-all="yourJSONDataFillThere"
       @updateDAG="updateDAG"
       @editNodeDetails="editNodeDetails"
       @doSthPersonal="doSthPersonal"
-    ></DAGBoard>
+    />
 
     <!-- 用来模拟拖拽添加的元素 -->
     <node-bus
@@ -65,8 +67,8 @@
 </template>
 
 <script>
-import { JSONFromService, nodesBasic } from "./data.js";
-import clip from "@/utils/clipboard"; // use clipboard directly
+import { JSONFromService, nodesBasic } from './data.js'
+import clip from '@/utils/clipboard' // use clipboard directly
 
 export default {
   components: {},
@@ -80,77 +82,77 @@ export default {
       yourJSONDataFillThere: {
         // 用来展示的节点与连线
         nodes: [],
-        sides: [],
+        sides: []
       },
       // 以下为拖拽方式添加节点必须内容
       busValue: {
-        value: "name",
+        value: 'name',
         pos_x: 100,
-        pos_y: 100,
+        pos_y: 100
       },
       // 监听的事件
       onkeydown: null,
       // 复制的内容
       copyContent: [],
       domToLeft: 0,
-      domToTop: 0,
-    };
+      domToTop: 0
+    }
   },
   created() {
-    this.loadJSON();
-    this.onkeydown = document.addEventListener("keydown", (e) => {
-      if (e.ctrlKey && e.key === "c") {
+    this.loadJSON()
+    this.onkeydown = document.addEventListener('keydown', (e) => {
+      if (e.ctrlKey && e.key === 'c') {
         // 按下ctrl + c
-        this.ctrlC();
-      } else if (e.ctrlKey && e.key === "v") {
+        this.ctrlC()
+      } else if (e.ctrlKey && e.key === 'v') {
         // 按下ctrl + v
-        this.ctrlV();
+        this.ctrlV()
       }
-    });
+    })
   },
   mounted() {},
   updated() {
-    let pageLeft = document.getElementsByClassName("page-left")[0]; // dom 的视口距离
-    this.domToTop = pageLeft.getBoundingClientRect().top; // dom 的顶边到视口顶部的距离
-    this.domToLeft = pageLeft.getBoundingClientRect().left; // dom 的左边到视口左边的距离
-    console.log(this.domToLeft, this.domToTop, "domToLeft");
+    const pageLeft = document.getElementsByClassName('page-left')[0] // dom 的视口距离
+    this.domToTop = pageLeft.getBoundingClientRect().top // dom 的顶边到视口顶部的距离
+    this.domToLeft = pageLeft.getBoundingClientRect().left // dom 的左边到视口左边的距离
+    console.log(this.domToLeft, this.domToTop, 'domToLeft')
   },
   beforeDestroy() {
-    this.onkeydown = null; // 销毁事件
+    this.onkeydown = null // 销毁事件
   },
   methods: {
     ctrlC() {
-      let currentChoice = this.$refs.DAGBoard.choice;
+      const currentChoice = this.$refs.DAGBoard.choice
       if (currentChoice.index > -1) {
         // 有选中元素
-        let activeNodes = this.yourJSONDataFillThere.nodes.filter(
+        const activeNodes = this.yourJSONDataFillThere.nodes.filter(
           (item) => currentChoice.paneNode.indexOf(item.id) > -1
-        );
-        this.copyContent = JSON.parse(JSON.stringify(activeNodes));
+        )
+        this.copyContent = JSON.parse(JSON.stringify(activeNodes))
         this.copyContent.forEach((item) => {
-          item.id = item.id + this.yourJSONDataFillThere.nodes.length + 100; // 自定义id规范 这里随便写个长度+100作为id
-          item.pos_x += 100 / (sessionStorage["svgScale"] || 1);
-          item.pos_y += 100 / (sessionStorage["svgScale"] || 1);
-        });
+          item.id = item.id + this.yourJSONDataFillThere.nodes.length + 100 // 自定义id规范 这里随便写个长度+100作为id
+          item.pos_x += 100 / (sessionStorage['svgScale'] || 1)
+          item.pos_y += 100 / (sessionStorage['svgScale'] || 1)
+        })
       }
     },
     ctrlV() {
-      if (!this.copyContent.length) return false;
-      this.yourJSONDataFillThere.nodes.push(...this.copyContent);
+      if (!this.copyContent.length) return false
+      this.yourJSONDataFillThere.nodes.push(...this.copyContent)
       this.$refs.DAGBoard.choice = {
         paneNode: [], // 选取的节点下标组
         index: -1,
-        point: -1,
-      }; // 复制完成 取消选中状态
-      this.copyContent = [];
+        point: -1
+      } // 复制完成 取消选中状态
+      this.copyContent = []
     },
     updateDAG(data, action, id) {
-      if (action === "startRunning") {
-        this.updateDAGData = JSON.stringify(data, null, 4);
-        document.getElementById("updateDAGData").innerHTML =
-          this.syntaxHighlight(data);
+      if (action === 'startRunning') {
+        this.updateDAGData = JSON.stringify(data, null, 4)
+        document.getElementById('updateDAGData').innerHTML =
+          this.syntaxHighlight(data)
       }
-      console.log(...arguments, 1111);
+      console.log(...arguments, 1111)
       // console.log(JSON.stringify(arguments[0]))
       // switch (action) {
       //   case 'selectNode':
@@ -159,42 +161,42 @@ export default {
       //   default: () => { }
       // }
     },
-    //处理json数据，采用正则过滤出不同类型参数
+    // 处理json数据，采用正则过滤出不同类型参数
     syntaxHighlight(json) {
-      if (typeof json != "string") {
-        json = JSON.stringify(json, undefined, 2);
+      if (typeof json !== 'string') {
+        json = JSON.stringify(json, undefined, 2)
       }
-      json = json.replace(/&/g, "&").replace(/</g, "<").replace(/>/g, ">");
+      json = json.replace(/&/g, '&').replace(/</g, '<').replace(/>/g, '>')
       return json.replace(
         /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g,
-        function (match) {
-          var cls = "number";
+        function(match) {
+          var cls = 'number'
           if (/^"/.test(match)) {
             if (/:$/.test(match)) {
-              cls = "key";
+              cls = 'key'
             } else {
-              cls = "string";
+              cls = 'string'
             }
           } else if (/true|false/.test(match)) {
-            cls = "boolean";
+            cls = 'boolean'
           } else if (/null/.test(match)) {
-            cls = "null";
+            cls = 'null'
           }
-          return '<span class="' + cls + '">' + match + "</span>";
+          return '<span class="' + cls + '">' + match + '</span>'
         }
-      );
+      )
     },
     editNodeDetails() {
-      console.log(...arguments);
+      console.log(...arguments)
     },
     doSthPersonal() {
-      console.log(...arguments);
+      console.log(...arguments)
     },
     loadJSON() {
       // 这里可以跟服务端交互获取数据
       setTimeout(() => {
-        this.yourJSONDataFillThere = JSONFromService;
-      }, 500);
+        this.yourJSONDataFillThere = JSONFromService
+      }, 500)
     },
     /**
      * 通过拖拽方式加入新节点必须的函数
@@ -209,106 +211,106 @@ export default {
        *    model_id: 跟后台交互使用
        * }
        **/
-      let dragDes = null;
-      if (sessionStorage["dragDes"]) {
-        dragDes = JSON.parse(sessionStorage["dragDes"]);
+      let dragDes = null
+      if (sessionStorage['dragDes']) {
+        dragDes = JSON.parse(sessionStorage['dragDes'])
       }
       if (dragDes && dragDes.drag) {
-        const x = e.pageX;
-        const y = e.pageY;
+        const x = e.pageX
+        const y = e.pageY
         this.busValue = Object.assign({}, this.busValue, {
           pos_x: x - this.domToLeft + 20,
           pos_y: y - this.domToTop + 20,
-          value: dragDes.name,
-        });
-        this.dragBus = true;
+          value: dragDes.name
+        })
+        this.dragBus = true
       }
     },
     moveNodesBus(e) {
       // 移动模拟节点
       if (this.dragBus) {
-        const x = e.pageX;
-        const y = e.pageY;
+        const x = e.pageX
+        const y = e.pageY
         this.busValue = Object.assign({}, this.busValue, {
           pos_x: x - this.domToLeft + 20,
-          pos_y: y - this.domToTop + 20,
-        });
+          pos_y: y - this.domToTop + 20
+        })
       }
     },
     endNodesBus(e) {
       // 节点放入svg
-      let dragDes = null;
-      if (sessionStorage["dragDes"]) {
-        dragDes = JSON.parse(sessionStorage["dragDes"]);
+      let dragDes = null
+      if (sessionStorage['dragDes']) {
+        dragDes = JSON.parse(sessionStorage['dragDes'])
       }
-      if (dragDes && dragDes.drag && e.toElement.id === "svgContent") {
+      if (dragDes && dragDes.drag && e.toElement.id === 'svgContent') {
         const pos_x =
-          (e.offsetX - 90 - (sessionStorage["svg_left"] || 0)) /
-          (sessionStorage["svgScale"] || 1); // 参数修正
+          (e.offsetX - 90 - (sessionStorage['svg_left'] || 0)) /
+          (sessionStorage['svgScale'] || 1) // 参数修正
         const pos_y =
-          (e.offsetY - 15 - (sessionStorage["svg_top"] || 0)) /
-          (sessionStorage["svgScale"] || 1); // 参数修正
-        delete dragDes.drag;
+          (e.offsetY - 15 - (sessionStorage['svg_top'] || 0)) /
+          (sessionStorage['svgScale'] || 1) // 参数修正
+        delete dragDes.drag
         const params = {
-          model_id: sessionStorage["newGraph"],
+          model_id: sessionStorage['newGraph'],
           desp: {
             pos_x,
             pos_y,
             name: this.busValue.value,
-            ...dragDes,
-          },
-        };
+            ...dragDes
+          }
+        }
         this.yourJSONDataFillThere.nodes.push({
           ...params.desp,
           id: this.yourJSONDataFillThere.nodes.length + 100, // 这里注意, 新增的id一定不能重复, 建议id交由后端处理
           in_ports: [0],
-          out_ports: [0],
-        });
+          out_ports: [0]
+        })
       }
-      window.sessionStorage["dragDes"] = null;
-      this.dragBus = false;
+      window.sessionStorage['dragDes'] = null
+      this.dragBus = false
     },
     dragIt(val) {
-      val.form.createTime = new Date().toDateString();
-      sessionStorage["dragDes"] = JSON.stringify({
+      val.form.createTime = new Date().toDateString()
+      sessionStorage['dragDes'] = JSON.stringify({
         drag: true,
-        ...val,
-      });
+        ...val
+      })
     },
     /**
      * 右侧form展示逻辑
      */
     showNodeDetails(val) {
       // 展示选中的节点
-      const { id, form } = val;
-      if (!form) return;
+      const { id, form } = val
+      if (!form) return
       this.formDetail = {
         currentEditNodeId: id,
-        form: Object.assign(this.formDetail.form, form, {}),
-      };
+        form: Object.assign(this.formDetail.form, form, {})
+      }
     },
     handleCopy(text, event) {
-      clip(text, event);
+      clip(text, event)
     },
     changeVersion() {
-      let GlobalConfigString = localStorage.getItem("GlobalConfig");
-      let GlobalConfig = {};
+      const GlobalConfigString = localStorage.getItem('GlobalConfig')
+      let GlobalConfig = {}
       if (GlobalConfigString && GlobalConfigString.length > 0) {
-        GlobalConfig = JSON.parse(GlobalConfigString);
-        GlobalConfig.isVertical = !GlobalConfig.isVertical;
-        localStorage.setItem("GlobalConfig", JSON.stringify(GlobalConfig));
+        GlobalConfig = JSON.parse(GlobalConfigString)
+        GlobalConfig.isVertical = !GlobalConfig.isVertical
+        localStorage.setItem('GlobalConfig', JSON.stringify(GlobalConfig))
       } else {
-        GlobalConfig.isVertical = false;
-        localStorage.setItem("GlobalConfig", JSON.stringify(GlobalConfig));
+        GlobalConfig.isVertical = false
+        localStorage.setItem('GlobalConfig', JSON.stringify(GlobalConfig))
       }
-      location.reload();
-      alert(`更改为 ${GlobalConfig.isVertical ? "垂直版本" : "横向版本"}`);
+      location.reload()
+      alert(`更改为 ${GlobalConfig.isVertical ? '垂直版本' : '横向版本'}`)
     },
     closeJson() {
-      this.updateDAGData = null;
-    },
-  },
-};
+      this.updateDAGData = null
+    }
+  }
+}
 </script>
 
 <style lang="scss" scoped>
