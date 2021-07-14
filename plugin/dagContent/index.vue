@@ -40,7 +40,7 @@
         v-for="(each, n) in DataAll.edges"
         :key="'____' + n"
         :DataAll="DataAll"
-        @delEdge="delEdge"
+        @delEdge="(param)=>delEdge(param,'edges')"
         :each="each"
         :index="n"
       />
@@ -49,7 +49,7 @@
        v-for="(each, n) in DataAll.rectEdges"
         :key="'____' + n"
         :DataAll="DataAll"
-        @delEdge="delEdge"
+        @delEdge="(param)=>delEdge(param,'rectEdges')"
         @updateData="updateData"
         :each="each"
         :index="n"
@@ -220,7 +220,6 @@ export default {
         });
         return
       }
-      console.log('start,target')
       if (this.currentEvent === "dragLink") {
         let params = {
           desp: {
@@ -492,22 +491,23 @@ export default {
     addEdge: (value, that) => {
       // 增加边
       let _DataAll = that.DataAll
-      _DataAll.edges.push({
+      let arrowType = that.DataAll.edges || that.DataAll.rectEdges
+      arrowType.push({
         ...value.desp,
-        id: _DataAll.edges.length + 10
+        id: arrowType.length + 10
       })
       that.$emit('updateDAG', _DataAll, 'addEdge')
     },
-    delEdge({ id }) {
+    delEdge({ id },arrowType) {
       // 删除边
-      console.log('id', id)
+      console.log('id', id,arrowType)
       let _edges = []
-      this.DataAll.edges.forEach((item, i) => {
+      this.DataAll[arrowType].forEach((item, i) => {
         if (item.id !== id) {
           _edges.push(item)
         }
       })
-      this.DataAll.edges = _edges
+      this.DataAll[arrowType] = _edges
       this.$emit('updateDAG', this.DataAll, 'delEdge')
     },
     moveNode(params) {
@@ -559,7 +559,8 @@ export default {
       // 删除节点
       let _edges = []
       let _nodes = []
-      this.DataAll.edges.forEach(item => {
+      let arrowType = this.DataAll.edges || this.DataAll.rectEdges;
+      arrowType.forEach(item => {
         if (item.dst_node_id !== id && item.src_node_id !== id) {
           _edges.push(item)
         }
@@ -569,7 +570,11 @@ export default {
           _nodes.push(item)
         }
       })
-      this.DataAll.edges = _edges
+      if(this.DataAll.edges){
+        this.DataAll.edges = _edges;
+      } else{
+        this.DataAll.rectEdges = _edges;
+      }
       this.DataAll.nodes = _nodes
       this.$emit('updateDAG', this.DataAll, 'delNode')
     },

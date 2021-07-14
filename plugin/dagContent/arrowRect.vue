@@ -1,6 +1,7 @@
 <!-- 这里演示新组件类型的扩充 折线组件 -->
 <template>
-        <g v-if="this.DataAll" class="arrow-rect" @mousemove="dragArrowCenter" @mouseout="dragArrowCenterEnd" @mouseup="dragArrowCenterEnd">
+        <!-- <g v-if="this.DataAll" class="arrow-rect" @mousemove="dragArrowCenter" @mouseout="dragArrowCenterEnd" @mouseup="dragArrowCenterEnd"> -->
+        <g v-if="this.DataAll" class="arrow-rect">
           <path
           @mouseover="pathHover"
           @mouseout="pathOut"
@@ -134,12 +135,20 @@ export default {
         const f_Pos = this.DataAll.nodes.find(item => item.id === src_node_id);
         const t_Pos = this.DataAll.nodes.find(item => item.id === dst_node_id);
         if (!f_Pos || !t_Pos) { alert(src_node_id) }
-        f_X = f_Pos.pos_x + (180 / (f_Pos.out_ports.length + 1)) * (src_output_idx + 1);
-        f_Y = f_Pos.pos_y + 30;
-        t_X = t_Pos.pos_x + (180 / (t_Pos.in_ports.length + 1)) * (dst_input_idx + 1);
-        t_Y = t_Pos.pos_y;
-        // 上面逻辑通过父子节点位置计算起始点
-        return `M ${f_X} ${f_Y} V ${((f_Y + t_Y) / 2 + VOffset)} H ${t_X} T ${t_X} ${t_Y}`;
+        if (this.isVertical()) {
+          f_X = f_Pos.pos_x + (180 / (f_Pos.out_ports.length + 1)) * (src_output_idx + 1);
+          f_Y = f_Pos.pos_y + 30;
+          t_X = t_Pos.pos_x + (180 / (t_Pos.in_ports.length + 1)) * (dst_input_idx + 1);
+          t_Y = t_Pos.pos_y;
+          // 上面逻辑通过父子节点位置计算起始点
+          return `M ${f_X} ${f_Y} V ${((f_Y + t_Y) / 2 + VOffset)} H ${t_X} T ${t_X} ${t_Y}`;
+        } else {
+          f_X = f_Pos.pos_x + 180
+          f_Y = f_Pos.pos_y + 15
+          t_X = t_Pos.pos_x
+          t_Y = t_Pos.pos_y + 15
+          return `M ${f_X} ${f_Y} V ${((f_Y + t_Y) / 2 + VOffset)} H ${t_X} T ${t_X} ${t_Y}`;
+        }
       }
     },
     computedText() { // 计算文字坐标

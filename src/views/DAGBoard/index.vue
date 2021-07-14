@@ -27,6 +27,11 @@
         size="medium"
         @click="changeVersion"
       >切换连线方向</el-button>
+      <el-button
+        type="primary"
+        size="medium"
+        @click="loadJSON2"
+      >切换连线类型</el-button>
     </div>
 
     <!-- 右侧表单 -->
@@ -193,10 +198,33 @@ export default {
       console.log(...arguments)
     },
     loadJSON() {
-      // 这里可以跟服务端交互获取数据
-      setTimeout(() => {
+      const ConnectionDirection = localStorage.getItem('ConnectionDirection')
+      if (ConnectionDirection && ConnectionDirection === 'edges') {
+        this.yourJSONDataFillThere = JSON.parse(JSON.stringify(JSONFromService).replace(/edges/g, 'rectEdges'))
+        // localStorage.setItem('ConnectionDirection', 'rectEdges')
+      } else if (ConnectionDirection && ConnectionDirection === 'rectEdges') {
+        this.yourJSONDataFillThere = JSON.parse(JSON.stringify(JSONFromService).replace(/rectEdges/g, 'edges'))
+        // localStorage.setItem('ConnectionDirection', 'edges')
+      } else {
         this.yourJSONDataFillThere = JSONFromService
-      }, 500)
+      }
+      // 这里可以跟服务端交互获取数据
+      // setTimeout(() => {
+      //   this.yourJSONDataFillThere = JSONFromService
+      // }, 500)
+    },
+    loadJSON2() {
+      const ConnectionDirection = localStorage.getItem('ConnectionDirection')
+      if (ConnectionDirection && ConnectionDirection === 'edges') {
+        this.yourJSONDataFillThere = JSON.parse(JSON.stringify(JSONFromService).replace(/edges/g, 'rectEdges'))
+        localStorage.setItem('ConnectionDirection', 'rectEdges')
+      } else {
+        this.yourJSONDataFillThere = JSON.parse(JSON.stringify(JSONFromService).replace(/rectEdges/g, 'edges'))
+        localStorage.setItem('ConnectionDirection', 'edges')
+      }
+      console.log(ConnectionDirection, 'ConnectionDirection')
+      location.reload()
+      alert(`更改为 ${ConnectionDirection === 'edges' ? '弧线' : '矩形线'}`)
     },
     /**
      * 通过拖拽方式加入新节点必须的函数
