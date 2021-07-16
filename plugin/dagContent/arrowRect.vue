@@ -13,10 +13,10 @@
           <text ref="edgeText" v-if="each.edgesText" :style="computedText()">{{each.edgesText}}</text>
           <polyline class="only-watch-el" :points="computedArrow()"
           style="stroke:#006600;"/>
-          <circle @mousedown="touchArrowCenter" :cx="computedCenterCx()" :cy="computedCenterCy()" r="5"
+          <!-- <circle @mousedown="touchArrowCenter" :cx="computedCenterCx()" :cy="computedCenterCy()" r="5"
             style="stroke:transparent;
             stroke-width: 100;
-            fill:#FFFFFF"/>
+            fill:#FFFFFF"/> -->
           <circle class="only-watch-el" :cx="computedCx()" :cy="computedCy()" r="5"
             style="stroke:#006600;
             stroke-width: 2;
@@ -145,9 +145,10 @@ export default {
         } else {
           f_X = f_Pos.pos_x + 180
           f_Y = f_Pos.pos_y + 15
-          t_X = t_Pos.pos_x
+          t_X = t_Pos.pos_x -50
           t_Y = t_Pos.pos_y + 15
-          return `M ${f_X} ${f_Y} V ${((f_Y + t_Y) / 2 + VOffset)} H ${t_X} T ${t_X} ${t_Y}`;
+          return `M ${f_X} ${f_Y} V ${((f_Y + t_Y) / 2 + VOffset)} H ${t_X} T ${t_X} ${t_Y} H ${t_X+50}`;
+          // return `M ${f_X} ${f_Y} V ${((f_Y + t_Y) / 2 + VOffset)} H ${t_X} T ${t_X} ${t_Y}`;
         }
       }
     },
@@ -201,9 +202,9 @@ export default {
         if (this.isVertical()) {
           return `${t_X} ${t_Y + 3} ${t_X - 3} ${t_Y - 3} ${t_X + 3} ${t_Y - 3}`;
         } else {
-          let t_X = t_Pos.pos_x
+          let t_X = t_Pos.pos_x-3
           let t_Y = t_Pos.pos_y + 15
-          return `${t_X - 2} ${t_Y + 3} ${t_X - 3} ${t_Y - 3} ${t_X + 3} ${t_Y - 1}`
+          return `${t_X - 2} ${t_Y + 5} ${t_X - 3} ${t_Y - 5} ${t_X + 5} ${t_Y - 1}`
         }
       }
     },

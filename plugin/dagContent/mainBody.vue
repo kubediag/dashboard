@@ -5,14 +5,15 @@
               <div>
                 <div :style="item.nodeStyle" :class="choice.paneNode.indexOf(item.id) !== -1 ? 'pane-node-content selected' : 'pane-node-content'">
                     <i
-                    @dblclick="$emit('nodesPersonalEvent', 'dbClickNodeIcon', item.id)"
+                    @dblclick="$emit('nodesPersonalEvent', 'dbClickNodeIcon', item.id);nodePop = true"
                     :style="item.iconStyle" :class="`${item.iconClassName || 'el-icon-coin'} icon icon-data`"></i>
                     <input
+                    disabled
                     type="text" class="name"
                     v-model="item.name"
                     @change="$emit('changeNodeName', item)">
                 </div>
-                <p v-if="choice.paneNode.indexOf(item.id) !== -1&&nodePop" class="node-pop">{{item.nameDescribe || item.name}}</p>
+                <p v-if="choice.paneNode.indexOf(item.id) !== -1&&nodePop" class="node-pop">{{item.form.details || item.name}}</p>
                 <div :class="currentEvent === 'dragLink' ? 'pane-node-parent-hl' : 'pane-node-parent' ">
                   <div v-for="(poi, nth) in item.in_ports" :key="'__' + nth" :style="{width: `${ 100 / (item.in_ports.length + 1)}%`}">
                     <span
@@ -36,14 +37,15 @@
               <div>
                 <div :style="item.nodeStyle" :class="choice.paneNode.indexOf(item.id) !== -1 ? 'pane-node-content selected' : 'pane-node-content'">
                     <i
-                    @dblclick="$emit('nodesPersonalEvent', 'dbClickNodeIcon', item.id)"
+                    @dblclick="$emit('nodesPersonalEvent', 'dbClickNodeIcon', item.id);nodePop = true"
                     :style="item.iconStyle" :class="`${item.iconClassName || 'el-icon-coin'} icon icon-data`"></i>
                     <input
+                    disabled
                     type="text" class="name"
                     v-model="item.name"
                     @change="$emit('changeNodeName', item)">
                 </div>
-                <p v-if="choice.paneNode.indexOf(item.id) !== -1&&nodePop" class="node-pop">{{item.nameDescribe || item.name}}</p>
+                <p v-if="choice.paneNode.indexOf(item.id) !== -1&&nodePop" class="node-pop">{{item.form.details || item.name}}</p>
                 <div id="parent-cross" :class="currentEvent === 'dragLink' ? 'pane-node-parent-hl' : 'pane-node-parent' ">
                   <div v-for="(poi, nth) in item.in_ports" :key="'__' + nth" :style="{width: `${ 100 / (item.in_ports.length + 1)}%`}">
                     <span
@@ -91,7 +93,7 @@
         watch:{
           choice: {
             handler(newValue, oldValue) {
-              this.nodePop = true;
+              this.nodePop = false;
             },
               deep: true
             }
@@ -229,30 +231,35 @@
 }
 
 .node-pop {
-  position: absolute;
+  /* position: absolute;
   right: -30px;
-  top: -100px;
+  top: -100px; */
+  width: 400px;
   border: 1px solid #ccc;
   padding: 10px 20px;
-  border-radius: 30px 20px;
+  border-radius: 20px;
+  /* border-radius: 30px 20px; */
   background: #fff;
   pointer-events: none;
 }
 .node-pop:after {
     content: '.';
     font-size: 0;
-    height: 20px;
+    height: 10px;
     width: 20px;
     background: #fff;
-    border: 2px #ccc solid;
+    /* border: 2px #ccc solid; */
     border-top: none;
     border-right: none;
     z-index: 100;
     position: absolute;
-    transform: rotate(-34deg) skew(-33deg, -1deg) scale(1.5);
+    /* transform: rotate(-34deg) skew(-33deg, -1deg) scale(1.5); */
+    transform: rotate(-42deg) skew(-19deg, 1deg) scale(1.5);
     border-radius: 20px 0 0 0;
-    left: -14px;
-    top: 22px;
+    left: 1px;
+    top: 48px;
+    /* left: -11px;
+    top: 22px; */
     pointer-events: none;
 }
 .pane-node-parent {

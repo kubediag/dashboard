@@ -1,4 +1,3 @@
-<!-- 纯净版示范 -->
 <template>
   <!-- 最外层容器监mouse系列事件, 用来做节点拖拽 -->
   <div
@@ -22,16 +21,16 @@
 
     <!-- 顶栏 -->
     <div class="headbar">
-      <el-button
+      <!-- <el-button
         type="primary"
         size="medium"
         @click="changeVersion"
-      >切换连线方向</el-button>
-      <el-button
+      >切换连线方向</el-button> -->
+      <!-- <el-button
         type="primary"
         size="medium"
         @click="loadJSON2"
-      >切换连线类型</el-button>
+      >切换连线类型</el-button> -->
     </div>
 
     <!-- 右侧表单 -->
@@ -40,7 +39,9 @@
         <span
           class="closeJson"
           @click="closeJson"
-        ><i class="el-icon-close" /></span>
+        ><i
+          class="el-icon-close"
+        /></span>
         <el-button
           type="primary"
           size="mini"
@@ -87,7 +88,7 @@ export default {
       yourJSONDataFillThere: {
         // 用来展示的节点与连线
         nodes: [],
-        sides: []
+        rectEdges: []
       },
       // 以下为拖拽方式添加节点必须内容
       busValue: {
@@ -104,6 +105,7 @@ export default {
     }
   },
   created() {
+    this.changeVersion()
     this.loadJSON()
     this.onkeydown = document.addEventListener('keydown', (e) => {
       if (e.ctrlKey && e.key === 'c') {
@@ -120,7 +122,7 @@ export default {
     const pageLeft = document.getElementsByClassName('page-left')[0] // dom 的视口距离
     this.domToTop = pageLeft.getBoundingClientRect().top // dom 的顶边到视口顶部的距离
     this.domToLeft = pageLeft.getBoundingClientRect().left // dom 的左边到视口左边的距离
-    console.log(this.domToLeft, this.domToTop, 'domToLeft')
+    // console.log(this.domToLeft, this.domToTop, 'domToLeft')
   },
   beforeDestroy() {
     this.onkeydown = null // 销毁事件
@@ -198,34 +200,34 @@ export default {
       console.log(...arguments)
     },
     loadJSON() {
-      const ConnectionDirection = localStorage.getItem('ConnectionDirection')
-      if (ConnectionDirection && ConnectionDirection === 'edges') {
-        this.yourJSONDataFillThere = JSON.parse(JSON.stringify(JSONFromService).replace(/edges/g, 'rectEdges'))
-        // localStorage.setItem('ConnectionDirection', 'rectEdges')
-      } else if (ConnectionDirection && ConnectionDirection === 'rectEdges') {
-        this.yourJSONDataFillThere = JSON.parse(JSON.stringify(JSONFromService).replace(/rectEdges/g, 'edges'))
-        // localStorage.setItem('ConnectionDirection', 'edges')
-      } else {
-        this.yourJSONDataFillThere = JSONFromService
-      }
-      // 这里可以跟服务端交互获取数据
-      // setTimeout(() => {
+      // const ConnectionDirection = localStorage.getItem('ConnectionDirection')
+      // if (ConnectionDirection && ConnectionDirection === 'edges') {
+      //   this.yourJSONDataFillThere = JSON.parse(JSON.stringify(JSONFromService).replace(/edges/g, 'rectEdges'))
+      //   // localStorage.setItem('ConnectionDirection', 'rectEdges')
+      // } else if (ConnectionDirection && ConnectionDirection === 'rectEdges') {
+      //   this.yourJSONDataFillThere = JSON.parse(JSON.stringify(JSONFromService).replace(/rectEdges/g, 'edges'))
+      //   // localStorage.setItem('ConnectionDirection', 'edges')
+      // } else {
       //   this.yourJSONDataFillThere = JSONFromService
-      // }, 500)
+      // }
+      // 这里可以跟服务端交互获取数据
+      setTimeout(() => {
+        this.yourJSONDataFillThere = JSONFromService
+      }, 500)
     },
-    loadJSON2() {
-      const ConnectionDirection = localStorage.getItem('ConnectionDirection')
-      if (ConnectionDirection && ConnectionDirection === 'edges') {
-        this.yourJSONDataFillThere = JSON.parse(JSON.stringify(JSONFromService).replace(/edges/g, 'rectEdges'))
-        localStorage.setItem('ConnectionDirection', 'rectEdges')
-      } else {
-        this.yourJSONDataFillThere = JSON.parse(JSON.stringify(JSONFromService).replace(/rectEdges/g, 'edges'))
-        localStorage.setItem('ConnectionDirection', 'edges')
-      }
-      console.log(ConnectionDirection, 'ConnectionDirection')
-      location.reload()
-      alert(`更改为 ${ConnectionDirection === 'edges' ? '弧线' : '矩形线'}`)
-    },
+    // loadJSON2() {
+    //   const ConnectionDirection = localStorage.getItem('ConnectionDirection')
+    //   if (ConnectionDirection && ConnectionDirection === 'edges') {
+    //     this.yourJSONDataFillThere = JSON.parse(JSON.stringify(JSONFromService).replace(/edges/g, 'rectEdges'))
+    //     localStorage.setItem('ConnectionDirection', 'rectEdges')
+    //   } else {
+    //     this.yourJSONDataFillThere = JSON.parse(JSON.stringify(JSONFromService).replace(/rectEdges/g, 'edges'))
+    //     localStorage.setItem('ConnectionDirection', 'edges')
+    //   }
+    //   console.log(ConnectionDirection, 'ConnectionDirection')
+    //   location.reload()
+    //   alert(`更改为 ${ConnectionDirection === 'edges' ? '弧线' : '矩形线'}`)
+    // },
     /**
      * 通过拖拽方式加入新节点必须的函数
      */
@@ -297,6 +299,60 @@ export default {
       }
       window.sessionStorage['dragDes'] = null
       this.dragBus = false
+      console.log(dragDes, this.yourJSONDataFillThere, 'ee')
+
+      this.yourJSONDataFillThere.nodes.forEach((v) => {
+        v.parentId = 0
+      })
+      this.priorityFn(this.yourJSONDataFillThere)
+    },
+    priorityFn({ nodes, rectEdges }) {
+      nodes.sort(function(a, b) {
+        return a.pos_y - b.pos_y
+      })
+      nodes.forEach((v) => {
+        let i = 1
+        rectEdges.forEach((k) => {
+          if (v.id === k.src_node_id) {
+            nodes.forEach((z) => {
+              if (z.id === k.dst_node_id) {
+                z.priority = i
+                z.parentId = v.id
+                i++
+              }
+            })
+          }
+        })
+      })
+      const sortNode = this.sortClass(nodes)
+      sortNode.forEach((v) => {
+        v.forEach((k, i) => {
+          if (k.parentId === 0) {
+            k.priority = 1
+          } else {
+            k.priority = i + 1
+          }
+        })
+      })
+      this.yourJSONDataFillThere.nodes = sortNode.flat()
+      // console.log(this.yourJSONDataFillThere, this.sortClass(nodes), sortNode.flat(), "nodes");
+    },
+    sortClass(sortData) {
+      const groupBy = (array, f) => {
+        const groups = {}
+        array.forEach((o) => {
+          const group = JSON.stringify(f(o))
+          groups[group] = groups[group] || []
+          groups[group].push(o)
+        })
+        return Object.keys(groups).map((group) => {
+          return groups[group]
+        })
+      }
+      const sorted = groupBy(sortData, (item) => {
+        return item.parentId // 返回需要分组的对象
+      })
+      return sorted
     },
     dragIt(val) {
       val.form.createTime = new Date().toDateString()
@@ -321,18 +377,21 @@ export default {
       clip(text, event)
     },
     changeVersion() {
-      const GlobalConfigString = localStorage.getItem('GlobalConfig')
-      let GlobalConfig = {}
-      if (GlobalConfigString && GlobalConfigString.length > 0) {
-        GlobalConfig = JSON.parse(GlobalConfigString)
-        GlobalConfig.isVertical = !GlobalConfig.isVertical
-        localStorage.setItem('GlobalConfig', JSON.stringify(GlobalConfig))
-      } else {
-        GlobalConfig.isVertical = false
-        localStorage.setItem('GlobalConfig', JSON.stringify(GlobalConfig))
-      }
-      location.reload()
-      alert(`更改为 ${GlobalConfig.isVertical ? '垂直版本' : '横向版本'}`)
+      const GlobalConfig = {}
+      GlobalConfig.isVertical = false
+      localStorage.setItem('GlobalConfig', JSON.stringify(GlobalConfig))
+      // return
+      // const GlobalConfigString = localStorage.getItem('GlobalConfig')
+      // if (GlobalConfigString && GlobalConfigString.length > 0) {
+      //   GlobalConfig = JSON.parse(GlobalConfigString)
+      //   GlobalConfig.isVertical = !GlobalConfig.isVertical
+      //   localStorage.setItem('GlobalConfig', JSON.stringify(GlobalConfig))
+      // } else {
+      //   GlobalConfig.isVertical = false
+      //   localStorage.setItem('GlobalConfig', JSON.stringify(GlobalConfig))
+      // }
+      // location.reload()
+      // alert(`更改为 ${GlobalConfig.isVertical ? '垂直版本' : '横向版本'}`)
     },
     closeJson() {
       this.updateDAGData = null
