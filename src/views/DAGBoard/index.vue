@@ -154,6 +154,31 @@ export default {
       this.copyContent = []
     },
     updateDAG(data, action, id) {
+      // 检测是否成环
+      data.rectEdges.forEach((item) => {
+        let isCircle = false
+        // 出口 入口id
+        const { dst_node_id } = item; // eslint-disable-line
+        const checkCircle = (dstNodeId, nth) => {
+          if (nth > data.nodes.length) {
+            isCircle = true
+            return false
+          }
+          data.rectEdges.forEach((item) => {
+            if (item.src_node_id === dstNodeId) {
+              console.log('目标节点是', item.src_node_id, '次数为', nth)
+              checkCircle(item.dst_node_id, ++nth); // eslint-disable-line
+            }
+          })
+          return false
+        }
+        checkCircle(dst_node_id, 1)
+        if (isCircle) {
+          data.rectEdges.pop()
+          this.$message.error('禁止成环')
+        }
+      })
+
       if (action === 'startRunning') {
         this.updateDAGData = JSON.stringify(data, null, 4)
         document.getElementById('updateDAGData').innerHTML =
