@@ -51,6 +51,18 @@ const oAsyncRoutes = [
       }
     ]
   },
+  {
+    path: '/DAGBoard3',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/DAGBoard3/index'),
+        name: 'CRD编辑器2',
+        meta: { title: 'CRD编辑器2', icon: 'user', affix: true }
+      }
+    ]
+  },
   // {
   //   path: '/userManage',
   //   component: Layout,
