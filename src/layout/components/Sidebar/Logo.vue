@@ -14,7 +14,7 @@
 </template>
 
 <script>
-import amnLogo from '../../../../public/static/tinymce4.7.5/skins/lightgray/img/amnLogo.png'
+// import amnLogo from '../../../../public/static/tinymce4.7.5/skins/lightgray/img/amnLogo.png'
 export default {
   name: 'SidebarLogo',
   props: {
@@ -28,7 +28,7 @@ export default {
       title: 'CRD编辑器',
       title2: 'CRD',
       // logo: 'https://wpimg.wallstcn.com/69a1c46c-eb1c-4b46-8bd4-e9e686ef5251.png'
-      logo: ''
+      logo: 'https://cn.vuejs.org/images/logo.svg'
     }
   }
 }

@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <el-button type="primary" @click="save">主要按钮</el-button>
+    <el-button type="primary" @click="save">保存</el-button>
     <div id="steps" />
     <el-drawer
       title="我是标题"
@@ -74,7 +74,8 @@ export default {
       ],
       selectValue: '',
       textarea2: '',
-      commitIcon: null
+      commitIcon: null,
+      myindex: []
     }
   },
   created() {
@@ -154,7 +155,9 @@ export default {
           `<span style="display: inline-block;height: 17px;">${node.label}</span>`
         )
 
-        const actionWrapper = vm.parseDom('<div class="step-box__action"></div>')
+        const actionWrapper = vm.parseDom(
+          '<div class="step-box__action"></div>'
+        )
         vm.commitIcon = vm.parseDom(
           // '<span class="iconfont icon-queren"></span>'
           '<i class="iconfont el-icon-circle-check"></i>'
@@ -190,7 +193,9 @@ export default {
             '</div>'
         )
 
-        const actionWrapper = vm.parseDom('<div class="step-box__action"></div>')
+        const actionWrapper = vm.parseDom(
+          '<div class="step-box__action"></div>'
+        )
         const addIcon = vm.parseDom(
           // '<span class="iconfont icon-jiahao"></span>'
           '<i class="iconfont el-icon-share"></i>'
@@ -204,68 +209,102 @@ export default {
           '<i class="iconfont el-icon-circle-close"></i>'
         )
         const addRightIcon = vm.parseDom(
-          '<i class="iconfont el-icon-circle-plus-outline" style="position: absolute;right: -10px;"></i>'
+          '<i class="iconfont el-icon-circle-plus-outline" style="position: absolute;right: -10px;font-size: 18px;z-index: 9;background: #000;border-radius: 50%;color: #fff;"></i>'
         )
         const addLeftIcon = vm.parseDom(
-          '<i class="iconfont el-icon-circle-plus-outline" style="position: absolute;left: -123px;"></i>'
+          '<i class="iconfont el-icon-circle-plus-outline" style="position: absolute;left: -123px;font-size: 18px;z-index: 9;background: #000;border-radius: 50%;color: #fff;"></i>'
         )
         addLeftIcon.addEventListener('click', function() {
-          vm.drawer = true
-          vm.selectValue = ''
-          vm.textarea2 = ''
-          const children = node.children
-          if (!children) {
-            node.children = []
-          }
-          if (vm.isTypeOf(children, 'Object')) {
-            node.children = [children]
-          }
-          const node2 = JSON.parse(JSON.stringify(node))
+          vm.$confirm(
+            `此操作将在“${node.label}”之前添加标签, 是否继续?`,
+            '提示',
+            {
+              confirmButtonText: '确定',
+              cancelButtonText: '取消',
+              type: 'warning'
+            }
+          )
+            .then(() => {
+              vm.drawer = true
+              vm.selectValue = ''
+              vm.textarea2 = ''
+              const children = node.children
+              if (!children) {
+                node.children = []
+              }
+              if (vm.isTypeOf(children, 'Object')) {
+                node.children = [children]
+              }
+              const node2 = JSON.parse(JSON.stringify(node))
 
-          node.children = [{ ...node2 }]
-          node.label = ''
-          node.id =
-            node2.id +
-            1 +
-            node2.children.length +
-            Math.round(Math.random() * 80 + 20)
-          node.parentId = node2.parentId
-          node.state = vm.EDIT_STATE
-          node.children[0].parentId = node.id
-          console.log(node2, node, vm.dataListTree, 'node')
-          vm.api.refresh()
+              node.children = [{ ...node2 }]
+              node.label = ''
+              node.id =
+                node2.id +
+                1 +
+                node2.children.length +
+                Math.round(Math.random() * 80 + 20)
+              node.parentId = node2.parentId
+              node.state = vm.EDIT_STATE
+              node.children[0].parentId = node.id
+              // console.log(node2, node, vm.dataListTree, "node");
+              vm.api.refresh()
+            })
+            .catch(() => {
+              vm.$message({
+                type: 'info',
+                message: '已取消'
+              })
+            })
         })
         addRightIcon.addEventListener('click', function() {
-          console.log(node, 'node')
-          vm.drawer = true
-          vm.selectValue = ''
-          vm.textarea2 = ''
-          const children = node.children
-          if (!children) {
-            node.children = []
-          }
-          if (vm.isTypeOf(children, 'Object')) {
-            node.children = [children]
-          }
-          node.children = [
+          // console.log(node, "node");
+          vm.$confirm(
+            `此操作将在“${node.label}”之后添加标签, 是否继续?`,
+            '提示',
             {
-              children: [...node.children],
-              id:
-                node.id +
-                1 +
-                node.children.length +
-                Math.round(Math.random() * 80 + 20),
-              parentId: node.id,
-              label: '',
-              state: vm.EDIT_STATE
+              confirmButtonText: '确定',
+              cancelButtonText: '取消',
+              type: 'warning'
             }
-          ]
-          node.children.forEach((v) => {
-            v.children.forEach((k) => {
-              k.parentId = v.id
+          )
+            .then(() => {
+              vm.drawer = true
+              vm.selectValue = ''
+              vm.textarea2 = ''
+              const children = node.children
+              if (!children) {
+                node.children = []
+              }
+              if (vm.isTypeOf(children, 'Object')) {
+                node.children = [children]
+              }
+              node.children = [
+                {
+                  children: [...node.children],
+                  id:
+                    node.id +
+                    1 +
+                    node.children.length +
+                    Math.round(Math.random() * 80 + 20),
+                  parentId: node.id,
+                  label: '',
+                  state: vm.EDIT_STATE
+                }
+              ]
+              node.children.forEach((v) => {
+                v.children.forEach((k) => {
+                  k.parentId = v.id
+                })
+              })
+              vm.api.refresh()
             })
-          })
-          vm.api.refresh()
+            .catch(() => {
+              vm.$message({
+                type: 'info',
+                message: '已取消'
+              })
+            })
         })
 
         addIcon.addEventListener('click', function() {
@@ -312,10 +351,23 @@ export default {
         })
 
         removeIcon.addEventListener('click', function() {
-          node.children = null
-          node.label = null
-          node = undefined
-          vm.api.refresh()
+          vm.$confirm(`此操作将删除“${node.label}”标签, 是否继续?`, '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+          })
+            .then(() => {
+              node.children = null
+              node.label = null
+              node = undefined
+              vm.api.refresh()
+            })
+            .catch(() => {
+              vm.$message({
+                type: 'info',
+                message: '已取消'
+              })
+            })
         })
         actionWrapper.appendChild(addIcon)
         actionWrapper.appendChild(editIcon)
@@ -330,12 +382,18 @@ export default {
       const vm = this
       dataListTree.forEach((v) => {
         if (v.id === data.parentId) {
-          const boxActive = document.getElementsByClassName('step-box' + v.id)[0]
+          const boxActive = document.getElementsByClassName(
+            'step-box' + v.id
+          )[0]
           if (boxActive) {
             boxActive.classList.add('step-boxActive')
-            const lineActive = boxActive.getElementsByClassName('step-line')[0]
+            vm.searchIndex([vm.dataListTree], data)
+            vm.myindex = vm.myindex.length < 1 ? [0] : vm.myindex
+            const lineActive =
+              boxActive.getElementsByClassName('step-line')[vm.myindex[0]]
             if (lineActive) {
               lineActive.classList.add('step-lineActive')
+              vm.myindex = []
             }
           }
           if (v.children && v.children.length) {
@@ -348,16 +406,34 @@ export default {
         }
       })
     },
+    searchIndex(dataListTree, data) {
+      const vm = this
+      dataListTree.forEach((v, i) => {
+        if (v.id === data.id) {
+          vm.myindex.push(i)
+        } else {
+          if (v.children) {
+            vm.searchIndex(v.children, data)
+          }
+        }
+      })
+    },
     findParentCancel(dataListTree, data) {
       const vm = this
       dataListTree.forEach((v) => {
         if (v.id === data.parentId) {
-          const boxActive = document.getElementsByClassName('step-box' + v.id)[0]
+          const boxActive = document.getElementsByClassName(
+            'step-box' + v.id
+          )[0]
           if (boxActive) {
             boxActive.classList.remove('step-boxActive')
-            const lineActive = boxActive.getElementsByClassName('step-line')[0]
+            vm.searchIndex([vm.dataListTree], data)
+            vm.myindex = vm.myindex.length < 1 ? [0] : vm.myindex
+            const lineActive =
+              boxActive.getElementsByClassName('step-line')[vm.myindex[0]]
             if (lineActive) {
               lineActive.classList.remove('step-lineActive')
+              vm.myindex = []
             }
           }
           if (v.children && v.children.length) {
@@ -373,7 +449,9 @@ export default {
     lookup(data) {
       const vm = this
       // console.log(data, document.getElementsByClassName("step-box" + data.id));
-      const boxActive = document.getElementsByClassName('step-box' + data.id)[0]
+      const boxActive = document.getElementsByClassName(
+        'step-box' + data.id
+      )[0]
       if (boxActive) {
         boxActive.classList.add('step-boxActive')
         const lineActive = boxActive.getElementsByClassName('step-line')[0]
@@ -388,7 +466,9 @@ export default {
     lookupCancel(data) {
       const vm = this
       // console.log(data, document.getElementsByClassName("step-box" + data.id));
-      const boxActive = document.getElementsByClassName('step-box' + data.id)[0]
+      const boxActive = document.getElementsByClassName(
+        'step-box' + data.id
+      )[0]
       if (boxActive) {
         boxActive.classList.remove('step-boxActive')
         const lineActive = boxActive.getElementsByClassName('step-line')[0]
@@ -432,7 +512,9 @@ export default {
     // muiltWrapper内如果里面还有muiltWrapper, 把其他子div的高度调为和最大高度一致
     calcMuiltWrapperHeight(startWrapper) {
       // 可以指定从某个wrapper节点开始调整
-      const muiltWrappers = startWrapper.querySelectorAll('.step-wrapper__muilt')
+      const muiltWrappers = startWrapper.querySelectorAll(
+        '.step-wrapper__muilt'
+      )
       // 倒序循环 从最内存开始计算高度
       for (let i = muiltWrappers.length - 1; i >= 0; i--) {
         const currentMuiltWrapper = muiltWrappers[i]

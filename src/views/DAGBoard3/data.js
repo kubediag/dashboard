@@ -4,7 +4,7 @@
 export const JSONFromService = {
   'id': 1,
   'parentId': 0,
-  'label': '进入商城',
+  'label': '开始',
   'children': [
     {
       'id': 50,

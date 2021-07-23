@@ -78,6 +78,11 @@
 .step-box:hover .iconfont {
 	display: inline;
 }
+.step-box1 .el-icon-edit-outline,
+.step-box1 .el-icon-circle-close,
+.step-box1 .el-icon-circle-plus-outline:last-child{
+	display: none !important;
+}
 
 .box-input__edit {
 	padding: 5px 3px;
@@ -99,10 +104,10 @@
 	background: #9CB4D8;
 	transform-origin: right;
 }
-/* .step-lineActive {
+.step-lineActive {
 	height: 2px;
 	background: #66f;
-} */
+}
 
 .step-dot {
 	position: absolute;
