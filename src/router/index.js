@@ -39,30 +39,55 @@ import Layout from '@/layout'
  * */
 
 const oAsyncRoutes = [
+  // {
+  //   path: '/DAGBoard',
+  //   component: Layout,
+  //   children: [
+  //     {
+  //       path: 'index',
+  //       component: () => import('@/views/DAGBoard/index'),
+  //       name: 'CRD编辑器',
+  //       meta: { title: 'CRD编辑器', icon: 'user', affix: true }
+  //     }
+  //   ]
+  // },
   {
-    path: '/DAGBoard',
+    path: '/diagnosis',
     component: Layout,
     children: [
       {
         path: 'index',
-        component: () => import('@/views/DAGBoard/index'),
-        name: 'CRD编辑器',
-        meta: { title: 'CRD编辑器', icon: 'user', affix: true }
+        component: () => import('@/views/diagnosis/index'),
+        name: '诊断编排',
+        meta: { title: '诊断编排', icon: 'layout', affix: true }
       }
     ]
   },
   {
-    path: '/DAGBoard3',
+    path: '/arrangeList',
     component: Layout,
     children: [
       {
         path: 'index',
-        component: () => import('@/views/DAGBoard3/index'),
-        name: 'CRD编辑器2',
-        meta: { title: 'CRD编辑器2', icon: 'user', affix: true }
+        component: () => import('@/views/arrangeList/index'),
+        name: '编排管理',
+        meta: { title: '编排管理', icon: 'arrange', affix: true }
       }
     ]
   },
+  {
+    path: '/operation',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/operation/index'),
+        name: '操作管理',
+        meta: { title: '操作管理', icon: 'operation', affix: true }
+      }
+    ]
+  },
+
   // {
   //   path: '/userManage',
   //   component: Layout,
@@ -139,7 +164,7 @@ export const constantRoutes = [
         path: 'dashboard',
         component: () => import('@/views/dashboard/index'),
         name: 'Dashboard',
-        meta: { title: '首页', icon: 'component', noCache: true, affix: true }
+        meta: { title: '首页', icon: 'home', noCache: true, affix: true }
       }
     ]
   },

@@ -25,8 +25,8 @@ export default {
   },
   data() {
     return {
-      title: 'CRD编辑器',
-      title2: 'CRD',
+      title: 'KubeDiag',
+      title2: 'KubeDiag',
       // logo: 'https://wpimg.wallstcn.com/69a1c46c-eb1c-4b46-8bd4-e9e686ef5251.png'
       logo: 'https://cn.vuejs.org/images/logo.svg'
     }
@@ -49,25 +49,26 @@ export default {
   width: 100%;
   height: 50px;
   line-height: 50px;
-  background: #1e1e28;
+  background: #fff;
   text-align: center;
   overflow: hidden;
 
   & .sidebar-logo-link {
     height: 100%;
-    width: 100%;
+    width: 100% !important;
+    text-align: center !important;
 
     & .sidebar-logo {
       width: 32px;
       height: 32px;
       vertical-align: middle;
-      margin-right: 12px;
+      margin-right: 6px;
     }
 
     & .sidebar-title {
       display: inline-block;
       margin: 0;
-      color: #fff;
+      color: #000;
       font-weight: 600;
       line-height: 50px;
       font-size: 22px;
