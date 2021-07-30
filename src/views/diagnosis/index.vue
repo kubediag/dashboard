@@ -1,7 +1,37 @@
 <template>
   <div class="app-container">
-    <el-button type="primary" @click="save">保存</el-button>
-    <div id="steps" />
+    <div style="padding-bottom: 15px; border-bottom: 1px solid #f8f8f8">
+      <div class="diagnosis2Logo">
+        <svg-icon icon-class="diagnosis2" />
+      </div>
+      <strong
+        style="line-height: 50px"
+      >离线在线业务混合部署的计数优化和参数调整</strong>
+      <div style="float: right">
+        <el-button @click="cleanUp">清空</el-button>
+        <el-button type="primary" @click="save">保存</el-button>
+      </div>
+    </div>
+    <div class="main">
+      <div class="stepsBox">
+        <div id="steps" />
+      </div>
+      <div class="optionBox">
+        <ul>
+          <li
+            v-for="item in options"
+            :key="item.value"
+            :class="{
+              'step-box': true,
+              'step-boxActive': item.value === targetTag.value,
+            }"
+            @click="optionFn(item)"
+          >
+            {{ item.label }}
+          </li>
+        </ul>
+      </div>
+    </div>
     <el-drawer
       title="我是标题"
       :visible.sync="drawer"
@@ -75,7 +105,8 @@ export default {
       selectValue: '',
       textarea2: '',
       commitIcon: null,
-      myindex: []
+      myindex: [],
+      targetTag: {}
     }
   },
   created() {
@@ -143,17 +174,17 @@ export default {
       const vm = this
       let stepBox
       // 编辑状态
-      if (node.state === vm.EDIT_STATE) {
+      const boo = false
+      if (boo) {
+        // if (node.state === vm.EDIT_STATE) {
         stepBox = vm.parseDom(
           '<div class="step-box step-box' +
             node.id +
             '">' +
-            '<div class="step-box__color"></div>' +
+            // `<el-tooltip effect="dark" content="提示文字" placement="top"><i class="el-icon-warning-outline"></i></el-tooltip>` +
             '</div>'
         )
-        const inputEl = vm.parseDom(
-          `<span style="display: inline-block;height: 17px;">${node.label}</span>`
-        )
+        const inputEl = vm.parseDom(`<span>${node.label}</span>`)
 
         const actionWrapper = vm.parseDom(
           '<div class="step-box__action"></div>'
@@ -164,7 +195,7 @@ export default {
         )
         const cancelIcon = vm.parseDom(
           // '<span class="iconfont icon-quxiao"></span>'
-          '<i class="iconfont el-icon-circle-close"></i>'
+          '<i class="iconfont el-icon-delete"></i>'
         )
 
         vm.commitIcon.addEventListener('click', function() {
@@ -188,8 +219,9 @@ export default {
           '<div class="step-box step-box' +
             node.id +
             '">' +
-            '<div class="step-box__color"></div>' +
-            `<span style="display: inline-block;height: 17px;">${node.label}</span>` +
+            `<el-tooltip content="提示文字"><i class="el-icon-warning-outline"></i>
+            </el-tooltip>` +
+            `<span>${node.label}</span>` +
             '</div>'
         )
 
@@ -198,7 +230,7 @@ export default {
         )
         const addIcon = vm.parseDom(
           // '<span class="iconfont icon-jiahao"></span>'
-          '<i class="iconfont el-icon-share"></i>'
+          '<i class="iconfont el-icon-document-add"></i>'
         )
         const editIcon = vm.parseDom(
           // '<span class="iconfont icon-bianji"></span>'
@@ -206,15 +238,23 @@ export default {
         )
         const removeIcon = vm.parseDom(
           // '<span class="iconfont icon-jianhao"></span>'
-          '<i class="iconfont el-icon-circle-close"></i>'
+          '<i class="iconfont el-icon-delete"></i>'
         )
         const addRightIcon = vm.parseDom(
-          '<i class="iconfont el-icon-circle-plus-outline" style="position: absolute;right: -10px;font-size: 18px;z-index: 9;background: #000;border-radius: 50%;color: #fff;"></i>'
+          '<i class="iconfont el-icon-circle-plus-outline" style="position: absolute;right: -50px;top: 45px;font-size: 20px;z-index: 9;background: #fff;border-radius: 50%;color: #3378FF;font-weight: 900;"></i>'
         )
         const addLeftIcon = vm.parseDom(
-          '<i class="iconfont el-icon-circle-plus-outline" style="position: absolute;left: -123px;font-size: 18px;z-index: 9;background: #000;border-radius: 50%;color: #fff;"></i>'
+          '<i class="iconfont el-icon-circle-plus-outline" style="position: absolute;left: -20px;top: 45px;font-size: 20px;z-index: 9;background: #fff;border-radius: 50%;color: #3378FF;font-weight: 900;"></i>'
         )
-        addLeftIcon.addEventListener('click', function() {
+        addLeftIcon.addEventListener('click', function(e) {
+          e.stopPropagation()
+          if (!vm.targetTag.label || !vm.targetTag.value) {
+            vm.$message({
+              message: '请先选择右侧标签',
+              type: 'warning'
+            })
+            return
+          }
           vm.$confirm(
             `此操作将在“${node.label}”之前添加标签, 是否继续?`,
             '提示',
@@ -225,9 +265,9 @@ export default {
             }
           )
             .then(() => {
-              vm.drawer = true
-              vm.selectValue = ''
-              vm.textarea2 = ''
+              // vm.drawer = true;
+              // vm.selectValue = "";
+              // vm.textarea2 = "";
               const children = node.children
               if (!children) {
                 node.children = []
@@ -238,7 +278,8 @@ export default {
               const node2 = JSON.parse(JSON.stringify(node))
 
               node.children = [{ ...node2 }]
-              node.label = ''
+              node.label = vm.targetTag.label
+              node.value = vm.targetTag.value
               node.id =
                 node2.id +
                 1 +
@@ -250,14 +291,17 @@ export default {
               // console.log(node2, node, vm.dataListTree, "node");
               vm.api.refresh()
             })
-            .catch(() => {
-              vm.$message({
-                type: 'info',
-                message: '已取消'
-              })
-            })
+            .catch(() => {})
         })
-        addRightIcon.addEventListener('click', function() {
+        addRightIcon.addEventListener('click', function(e) {
+          e.stopPropagation()
+          if (!vm.targetTag.label || !vm.targetTag.value) {
+            vm.$message({
+              message: '请先选择右侧标签',
+              type: 'warning'
+            })
+            return
+          }
           // console.log(node, "node");
           vm.$confirm(
             `此操作将在“${node.label}”之后添加标签, 是否继续?`,
@@ -269,9 +313,9 @@ export default {
             }
           )
             .then(() => {
-              vm.drawer = true
-              vm.selectValue = ''
-              vm.textarea2 = ''
+              // vm.drawer = true;
+              // vm.selectValue = "";
+              // vm.textarea2 = "";
               const children = node.children
               if (!children) {
                 node.children = []
@@ -288,7 +332,8 @@ export default {
                     node.children.length +
                     Math.round(Math.random() * 80 + 20),
                   parentId: node.id,
-                  label: '',
+                  label: vm.targetTag.label,
+                  value: vm.targetTag.value,
                   state: vm.EDIT_STATE
                 }
               ]
@@ -299,19 +344,23 @@ export default {
               })
               vm.api.refresh()
             })
-            .catch(() => {
-              vm.$message({
-                type: 'info',
-                message: '已取消'
-              })
-            })
+            .catch(() => {})
         })
 
-        addIcon.addEventListener('click', function() {
-          vm.drawer = true
-          vm.selectValue = ''
-          vm.textarea2 = ''
+        addIcon.addEventListener('click', function(e) {
+          e.stopPropagation()
+          if (!vm.targetTag.label || !vm.targetTag.value) {
+            vm.$message({
+              message: '请先选择右侧标签',
+              type: 'warning'
+            })
+            return
+          }
+          // vm.drawer = true;
+          // vm.selectValue = "";
+          // vm.textarea2 = "";
           const children = node.children
+          // const children = vm.targetTag;
           if (!children) {
             node.children = []
           }
@@ -325,17 +374,28 @@ export default {
               node.children.length +
               Math.round(Math.random() * 80 + 20),
             parentId: node.id,
-            label: '',
+            label: vm.targetTag.label,
+            value: vm.targetTag.value,
             state: vm.EDIT_STATE
           })
           vm.api.refresh()
         })
 
-        editIcon.addEventListener('click', function() {
+        editIcon.addEventListener('click', function(e) {
+          e.stopPropagation()
+          if (!vm.targetTag.label || !vm.targetTag.value) {
+            vm.$message({
+              message: '请先选择右侧标签',
+              type: 'warning'
+            })
+            return
+          }
           node.state = vm.EDIT_STATE
-          vm.selectValue = node.label
-          vm.textarea2 = node.desc
-          vm.drawer = true
+          node.label = vm.targetTag.label
+          node.value = vm.targetTag.value
+          // vm.selectValue = node.label;
+          // vm.textarea2 = node.desc;
+          // vm.drawer = true;
           vm.api.refresh()
         })
 
@@ -350,7 +410,13 @@ export default {
           // console.log({ ...node }, "mouseout");
         })
 
-        removeIcon.addEventListener('click', function() {
+        stepBox.addEventListener('click', function(e) {
+          e.stopImmediatePropagation()
+          console.log({ ...node }, e, e.stopImmediatePropagation, 'click')
+        })
+
+        removeIcon.addEventListener('click', function(e) {
+          e.stopPropagation()
           vm.$confirm(`此操作将删除“${node.label}”标签, 是否继续?`, '提示', {
             confirmButtonText: '确定',
             cancelButtonText: '取消',
@@ -362,13 +428,16 @@ export default {
               node = undefined
               vm.api.refresh()
             })
-            .catch(() => {
-              vm.$message({
-                type: 'info',
-                message: '已取消'
-              })
-            })
+            .catch(() => {})
         })
+
+        vm.commitIcon = vm.parseDom('<i></i>')
+        vm.commitIcon.addEventListener('click', function(e) {
+          e.stopPropagation()
+          vm.api.refresh()
+        })
+        actionWrapper.appendChild(vm.commitIcon)
+
         actionWrapper.appendChild(addIcon)
         actionWrapper.appendChild(editIcon)
         actionWrapper.appendChild(removeIcon)
@@ -560,7 +629,7 @@ export default {
         const nextBoxLeft = nextBoxPosition.left
         const lineWidth = nextBoxLeft - currentBoxLeft - currentBoxWidth
         const line = getStepLine()
-        line.style.width = lineWidth + 'px'
+        line.style.width = lineWidth - 5 + 'px'
         stepBox.appendChild(line)
       }
       // 一对多直线画法
@@ -673,9 +742,27 @@ export default {
     save() {
       console.log({ ...this.dataListTree }, 'save')
     },
+    cleanUp() {
+      const vm = this
+      vm.$confirm(`此操作将清空标签, 是否继续?`, '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(() => {
+          vm.dataListTree.children = []
+          vm.commitIcon.click()
+        })
+        .catch(() => {})
+      console.log({ ...vm.dataListTree }, 'cleanUp')
+    },
     handleClose(done) {
       this.commitIcon.click()
       done()
+    },
+    optionFn(row) {
+      this.targetTag = row
+      console.log(this.targetTag, row)
     }
   }
 }
@@ -684,5 +771,43 @@ export default {
 <style lang="scss" scoped>
 .app-container {
   overflow-x: auto;
+}
+.diagnosis2Logo {
+  width: 50px;
+  height: 50px;
+  float: left;
+  background: #85aeff;
+  margin-right: 10px;
+  border-radius: 5px;
+  text-align: center;
+  line-height: 50px;
+  font-size: 30px;
+}
+.main {
+  width: 100%;
+  height: calc(100vh - 196px);
+}
+.stepsBox {
+  width: calc(100% - 185px);
+  height: 100%;
+  overflow: auto;
+  float: left;
+  padding-top: 20px;
+}
+.optionBox {
+  height: 100%;
+  width: 180px;
+  float: right;
+  border-left: 1px solid #f8f8f8;
+  overflow: auto;
+}
+.optionBox ul {
+  margin: 0;
+  padding: 0;
+  text-align: center;
+  list-style-type: none;
+}
+.optionBox ul li {
+  margin: 10px auto;
 }
 </style>
