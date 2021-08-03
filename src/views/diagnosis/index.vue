@@ -8,14 +8,36 @@
         style="line-height: 50px"
       >离线在线业务混合部署的计数优化和参数调整</strong>
       <div style="float: right">
-        <el-button @click="cleanUp">清空</el-button>
-        <el-button type="primary" @click="save">保存</el-button>
+        <el-button @click="cleanUp"> 清空 </el-button>
+        <el-button type="primary" @click="save"> 保存 </el-button>
       </div>
     </div>
     <div class="main">
       <div class="stepsBox">
         <div id="steps" />
       </div>
+      <div class="optionBox" style="width: 0">
+        <!-- <ul>
+          <li
+            v-for="item in options"
+            :key="item.value"
+            :class="{
+              'step-box': true,
+              'step-boxActive': item.value === targetTag.value,
+            }"
+            @click="optionFn(item)"
+          >
+            {{ item.label }}
+          </li>
+        </ul> -->
+      </div>
+    </div>
+    <el-drawer
+      :size="230"
+      title="我是标题"
+      :visible.sync="drawer"
+      :before-close="handleClose"
+    >
       <div class="optionBox">
         <ul>
           <li
@@ -31,42 +53,16 @@
           </li>
         </ul>
       </div>
-    </div>
-    <el-drawer
-      title="我是标题"
-      :visible.sync="drawer"
-      :before-close="handleClose"
-    >
-      <div style="padding: 20px">
-        <span>名称：</span>
-        <el-select
-          v-model="selectValue"
-          placeholder="请选择"
-          @change="changeSelect"
-        >
-          <el-option
-            v-for="item in options"
-            :key="item.value"
-            :label="item.label"
-            :value="item.label"
-          />
-        </el-select>
-        <div>描述：</div>
-        <el-input
-          v-model="textarea2"
-          type="textarea"
-          :autosize="{ minRows: 2, maxRows: 4 }"
-          placeholder="请输入内容"
-        />
-      </div>
     </el-drawer>
+    <edit ref="edit" />
   </div>
 </template>
 
 <script>
+import edit from '../operation/edit.vue'
 import { JSONFromService } from './data.js'
 export default {
-  components: {},
+  components: { edit },
   props: {},
   data() {
     return {
@@ -102,11 +98,11 @@ export default {
           label: '北京烤鸭'
         }
       ],
-      selectValue: '',
-      textarea2: '',
       commitIcon: null,
+      commitIcon2: null,
       myindex: [],
-      targetTag: {}
+      targetTag: {},
+      node2: {}
     }
   },
   created() {
@@ -115,7 +111,14 @@ export default {
   mounted() {
     this.stepFn()
   },
-  updated() {},
+  updated() {
+    if (this.drawer) {
+      document.getElementsByClassName('stepsBox')[0].style.width =
+        document.getElementsByClassName('stepsBox')[0].clientWidth - 185 + 'px'
+    } else {
+      document.getElementsByClassName('stepsBox')[0].style.width = '100%'
+    }
+  },
   beforeDestroy() {},
   methods: {
     stepFn() {
@@ -136,7 +139,9 @@ export default {
         },
         // 空节点
         isEmptyNode: function(node) {
-          return !node.label && !node.state && !node.children
+          // return !node.label;
+          // return !node.label && !node.state && !node.children;
+          return !node.label && !node.state
         },
         // 获取一个多行wrapper
         getMuiltWrapper: function() {
@@ -174,34 +179,39 @@ export default {
       const vm = this
       let stepBox
       // 编辑状态
-      const boo = false
-      if (boo) {
-        // if (node.state === vm.EDIT_STATE) {
+      if (node.state === vm.EDIT_STATE) {
         stepBox = vm.parseDom(
           '<div class="step-box step-box' +
             node.id +
             '">' +
-            // `<el-tooltip effect="dark" content="提示文字" placement="top"><i class="el-icon-warning-outline"></i></el-tooltip>` +
+            `<span>${node.label}</span>` +
             '</div>'
         )
-        const inputEl = vm.parseDom(`<span>${node.label}</span>`)
+        // const inputEl = vm.parseDom(`<span>${node.label}</span>`);
 
         const actionWrapper = vm.parseDom(
           '<div class="step-box__action"></div>'
         )
         vm.commitIcon = vm.parseDom(
-          // '<span class="iconfont icon-queren"></span>'
           '<i class="iconfont el-icon-circle-check"></i>'
         )
         const cancelIcon = vm.parseDom(
-          // '<span class="iconfont icon-quxiao"></span>'
           '<i class="iconfont el-icon-delete"></i>'
         )
 
-        vm.commitIcon.addEventListener('click', function() {
-          node.label = vm.selectValue
-          node.desc = vm.textarea2
+        vm.commitIcon.addEventListener('click', function(e) {
+          e.stopPropagation()
+          console.log(vm.node2, vm.targetTag, 'vm.targetTag')
+          node.label = vm.targetTag.label || null
+          node.value = vm.targetTag.value || null
+          if (vm.node2.label && !vm.targetTag.label) {
+            node.label = vm.node2.label
+            node.value = vm.node2.value
+            node.children = vm.node2.children
+          }
           node.state = null
+          vm.targetTag = {}
+          vm.node2 = {}
           vm.api.refresh()
         })
 
@@ -213,14 +223,12 @@ export default {
         actionWrapper.appendChild(vm.commitIcon)
         actionWrapper.appendChild(cancelIcon)
         stepBox.appendChild(actionWrapper)
-        stepBox.appendChild(inputEl)
+        // stepBox.appendChild(inputEl);
       } else {
         stepBox = vm.parseDom(
           '<div class="step-box step-box' +
             node.id +
             '">' +
-            `<el-tooltip content="提示文字"><i class="el-icon-warning-outline"></i>
-            </el-tooltip>` +
             `<span>${node.label}</span>` +
             '</div>'
         )
@@ -228,33 +236,54 @@ export default {
         const actionWrapper = vm.parseDom(
           '<div class="step-box__action"></div>'
         )
+        const tooltip = vm.parseDom(
+          `<div style="display: inline;"><i class="el-icon-warning-outline"></i><div class="popover popover${
+            node.id
+          }">${
+            node.label + node.id
+          }<div class="popper__arrow"></div></div></div>`
+        )
+        tooltip.addEventListener('click', function(e) {
+          e.stopPropagation()
+        })
+        tooltip.addEventListener('mouseenter', function(e) {
+          e.stopPropagation()
+          document.getElementsByClassName(
+            'popover' + node.id
+          )[0].style.display = 'block'
+          // console.log("tooltip", "mouseenter");
+        })
+        tooltip.addEventListener('mouseleave', function(e) {
+          e.stopPropagation()
+          document.getElementsByClassName(
+            'popover' + node.id
+          )[0].style.display = 'none'
+          // console.log("tooltip", "mouseleave");
+        })
         const addIcon = vm.parseDom(
-          // '<span class="iconfont icon-jiahao"></span>'
           '<i class="iconfont el-icon-document-add"></i>'
         )
         const editIcon = vm.parseDom(
-          // '<span class="iconfont icon-bianji"></span>'
           '<i class="iconfont el-icon-edit-outline"></i>'
         )
         const removeIcon = vm.parseDom(
-          // '<span class="iconfont icon-jianhao"></span>'
           '<i class="iconfont el-icon-delete"></i>'
         )
         const addRightIcon = vm.parseDom(
-          '<i class="iconfont el-icon-circle-plus-outline" style="position: absolute;right: -50px;top: 45px;font-size: 20px;z-index: 9;background: #fff;border-radius: 50%;color: #3378FF;font-weight: 900;"></i>'
+          '<i class="iconfont addRightIcon el-icon-circle-plus-outline"></i>'
         )
         const addLeftIcon = vm.parseDom(
-          '<i class="iconfont el-icon-circle-plus-outline" style="position: absolute;left: -20px;top: 45px;font-size: 20px;z-index: 9;background: #fff;border-radius: 50%;color: #3378FF;font-weight: 900;"></i>'
+          '<i class="iconfont addLeftIcon el-icon-circle-plus-outline"></i>'
         )
         addLeftIcon.addEventListener('click', function(e) {
           e.stopPropagation()
-          if (!vm.targetTag.label || !vm.targetTag.value) {
-            vm.$message({
-              message: '请先选择右侧标签',
-              type: 'warning'
-            })
-            return
-          }
+          // if (!vm.targetTag.label || !vm.targetTag.value) {
+          //   vm.$message({
+          //     message: "请先选择右侧标签",
+          //     type: "warning",
+          //   });
+          //   return;
+          // }
           vm.$confirm(
             `此操作将在“${node.label}”之前添加标签, 是否继续?`,
             '提示',
@@ -265,9 +294,8 @@ export default {
             }
           )
             .then(() => {
-              // vm.drawer = true;
+              vm.drawer = true
               // vm.selectValue = "";
-              // vm.textarea2 = "";
               const children = node.children
               if (!children) {
                 node.children = []
@@ -275,34 +303,35 @@ export default {
               if (vm.isTypeOf(children, 'Object')) {
                 node.children = [children]
               }
-              const node2 = JSON.parse(JSON.stringify(node))
+              vm.node2 = JSON.parse(JSON.stringify(node))
+              console.log(vm.node2, 'vm.node2')
 
-              node.children = [{ ...node2 }]
-              node.label = vm.targetTag.label
-              node.value = vm.targetTag.value
+              node.children = [{ ...vm.node2 }]
+              // node.label = vm.targetTag.label;
+              // node.value = vm.targetTag.value;
+              node.label = ''
+              node.value = ''
               node.id =
-                node2.id +
+                vm.node2.id +
                 1 +
-                node2.children.length +
+                vm.node2.children.length +
                 Math.round(Math.random() * 80 + 20)
-              node.parentId = node2.parentId
+              node.parentId = vm.node2.parentId
               node.state = vm.EDIT_STATE
               node.children[0].parentId = node.id
-              // console.log(node2, node, vm.dataListTree, "node");
               vm.api.refresh()
             })
             .catch(() => {})
         })
         addRightIcon.addEventListener('click', function(e) {
           e.stopPropagation()
-          if (!vm.targetTag.label || !vm.targetTag.value) {
-            vm.$message({
-              message: '请先选择右侧标签',
-              type: 'warning'
-            })
-            return
-          }
-          // console.log(node, "node");
+          // if (!vm.targetTag.label || !vm.targetTag.value) {
+          //   vm.$message({
+          //     message: "请先选择右侧标签",
+          //     type: "warning",
+          //   });
+          //   return;
+          // }
           vm.$confirm(
             `此操作将在“${node.label}”之后添加标签, 是否继续?`,
             '提示',
@@ -313,9 +342,7 @@ export default {
             }
           )
             .then(() => {
-              // vm.drawer = true;
-              // vm.selectValue = "";
-              // vm.textarea2 = "";
+              vm.drawer = true
               const children = node.children
               if (!children) {
                 node.children = []
@@ -332,8 +359,10 @@ export default {
                     node.children.length +
                     Math.round(Math.random() * 80 + 20),
                   parentId: node.id,
-                  label: vm.targetTag.label,
-                  value: vm.targetTag.value,
+                  // label: vm.targetTag.label,
+                  // value: vm.targetTag.value,
+                  label: '',
+                  value: '',
                   state: vm.EDIT_STATE
                 }
               ]
@@ -349,18 +378,15 @@ export default {
 
         addIcon.addEventListener('click', function(e) {
           e.stopPropagation()
-          if (!vm.targetTag.label || !vm.targetTag.value) {
-            vm.$message({
-              message: '请先选择右侧标签',
-              type: 'warning'
-            })
-            return
-          }
-          // vm.drawer = true;
-          // vm.selectValue = "";
-          // vm.textarea2 = "";
+          // if (!vm.targetTag.label || !vm.targetTag.value) {
+          //   vm.$message({
+          //     message: "请先选择右侧标签",
+          //     type: "warning",
+          //   });
+          //   return;
+          // }
+          vm.drawer = true
           const children = node.children
-          // const children = vm.targetTag;
           if (!children) {
             node.children = []
           }
@@ -374,8 +400,10 @@ export default {
               node.children.length +
               Math.round(Math.random() * 80 + 20),
             parentId: node.id,
-            label: vm.targetTag.label,
-            value: vm.targetTag.value,
+            // label: vm.targetTag.label,
+            // value: vm.targetTag.value,
+            label: '',
+            value: '',
             state: vm.EDIT_STATE
           })
           vm.api.refresh()
@@ -383,28 +411,30 @@ export default {
 
         editIcon.addEventListener('click', function(e) {
           e.stopPropagation()
-          if (!vm.targetTag.label || !vm.targetTag.value) {
-            vm.$message({
-              message: '请先选择右侧标签',
-              type: 'warning'
-            })
-            return
-          }
+          // if (!vm.targetTag.label || !vm.targetTag.value) {
+          //   vm.$message({
+          //     message: "请先选择右侧标签",
+          //     type: "warning",
+          //   });
+          //   return;
+          // }
+          vm.drawer = true
           node.state = vm.EDIT_STATE
-          node.label = vm.targetTag.label
-          node.value = vm.targetTag.value
-          // vm.selectValue = node.label;
-          // vm.textarea2 = node.desc;
-          // vm.drawer = true;
+          // node.label = vm.targetTag.label;
+          // node.value = vm.targetTag.value;
+          // vm.targetTag.label = node.label;
+          // vm.targetTag.value = node.value;
           vm.api.refresh()
         })
 
-        stepBox.addEventListener('mouseenter', function() {
+        stepBox.addEventListener('mouseenter', function(e) {
+          e.stopImmediatePropagation()
           vm.findParent([vm.dataListTree], node)
           vm.lookup(node)
           // console.log(vm.dataListTree, { ...node }, "mousedown");
         })
-        stepBox.addEventListener('mouseleave', function() {
+        stepBox.addEventListener('mouseleave', function(e) {
+          e.stopImmediatePropagation()
           vm.findParentCancel([vm.dataListTree], node)
           vm.lookupCancel(node)
           // console.log({ ...node }, "mouseout");
@@ -412,7 +442,10 @@ export default {
 
         stepBox.addEventListener('click', function(e) {
           e.stopImmediatePropagation()
-          console.log({ ...node }, e, e.stopImmediatePropagation, 'click')
+          if (node.label !== '开始' && node.id !== 0) {
+            vm.$refs.edit.openDrawer(node)
+          }
+          // console.log({ ...node }, e, e.stopImmediatePropagation, "click");
         })
 
         removeIcon.addEventListener('click', function(e) {
@@ -431,12 +464,12 @@ export default {
             .catch(() => {})
         })
 
-        vm.commitIcon = vm.parseDom('<i></i>')
-        vm.commitIcon.addEventListener('click', function(e) {
+        vm.commitIcon2 = vm.parseDom('<i></i>')
+        vm.commitIcon2.addEventListener('click', function(e) {
           e.stopPropagation()
           vm.api.refresh()
         })
-        actionWrapper.appendChild(vm.commitIcon)
+        // actionWrapper.appendChild(vm.commitIcon);
 
         actionWrapper.appendChild(addIcon)
         actionWrapper.appendChild(editIcon)
@@ -444,6 +477,7 @@ export default {
         actionWrapper.appendChild(addRightIcon)
         actionWrapper.appendChild(addLeftIcon)
         stepBox.appendChild(actionWrapper)
+        stepBox.appendChild(tooltip)
       }
       return stepBox
     },
@@ -691,6 +725,7 @@ export default {
         // 单对多
         const childWrappers = nextWrapper.children
         for (let i = 0, len = childWrappers.length; i < len; i++) {
+          // for (let i = 0, len = childWrappers.length; i <script len; i++) {
           const childWrapper = childWrappers[i]
           vm.drawDotsAndLine(childWrapper)
           drawMuiltLine(stepBox, childWrapper)
@@ -736,9 +771,6 @@ export default {
           }
         })
     },
-    changeSelect() {
-      this.commitIcon.click()
-    },
     save() {
       console.log({ ...this.dataListTree }, 'save')
     },
@@ -751,18 +783,20 @@ export default {
       })
         .then(() => {
           vm.dataListTree.children = []
-          vm.commitIcon.click()
+          vm.commitIcon2.click()
         })
         .catch(() => {})
       console.log({ ...vm.dataListTree }, 'cleanUp')
     },
+    optionFn(row) {
+      this.targetTag = row
+      this.commitIcon.click()
+      this.drawer = false
+    },
     handleClose(done) {
       this.commitIcon.click()
       done()
-    },
-    optionFn(row) {
-      this.targetTag = row
-      console.log(this.targetTag, row)
+      console.log('handleClose')
     }
   }
 }
@@ -792,16 +826,17 @@ export default {
   height: 100%;
   overflow: auto;
   float: left;
-  padding-top: 20px;
+  padding: 20px 0 80px 0;
 }
 .optionBox {
   height: 100%;
-  width: 180px;
-  float: right;
-  border-left: 1px solid #f8f8f8;
+  // width: 180px;
+  text-align: center;
+  // border-left: 1px solid #f8f8f8;
   overflow: auto;
 }
 .optionBox ul {
+  display: inline-block;
   margin: 0;
   padding: 0;
   text-align: center;
@@ -809,5 +844,60 @@ export default {
 }
 .optionBox ul li {
   margin: 10px auto;
+}
+/deep/ .addRightIcon {
+  position: absolute;
+  right: -50px;
+  top: 45px;
+  font-size: 20px;
+  z-index: 9;
+  background: #fff;
+  border-radius: 50%;
+  color: #3378ff;
+  font-weight: 900;
+}
+/deep/ .addLeftIcon {
+  position: absolute;
+  left: -20px;
+  top: 45px;
+  font-size: 20px;
+  z-index: 9;
+  background: #fff;
+  border-radius: 50%;
+  color: #3378ff;
+  font-weight: 900;
+}
+/deep/ .popover {
+  display: none;
+  background: #fff;
+  border-radius: 4px;
+  border: 1px solid #ebeef5;
+  width: 200px;
+  padding: 10px;
+  line-height: 26px;
+  font-size: 14px;
+  // text-align-last: left;
+  white-space: normal;
+  position: absolute;
+  top: 30px;
+  left: 0;
+  box-shadow: 0 0 10px #eee;
+  // transform-origin: center top;
+  z-index: 2001;
+}
+/deep/ .popper__arrow:after {
+  content: " ";
+  border-width: 8px;
+  position: absolute;
+  display: block;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  top: -8px;
+  left: 50%;
+  margin-left: -5px;
+  border-top-width: 0;
+  border-bottom-color: #fff;
 }
 </style>

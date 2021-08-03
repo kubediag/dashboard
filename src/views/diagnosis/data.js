@@ -2,13 +2,13 @@
  * 这里放置json 数据撑起组件内容
  */
 export const JSONFromService = {
-  'id': 1,
-  'parentId': 0,
+  'id': 0,
+  'parentId': -1,
   'label': '开始',
   'children': [
     {
       'id': 50,
-      'parentId': 1,
+      'parentId': 0,
       'label': '蚵仔煎',
       'state': null,
       'desc': '',
@@ -95,7 +95,7 @@ export const JSONFromService = {
     },
     {
       'id': 66,
-      'parentId': 1,
+      'parentId': 0,
       'label': '龙须面',
       'state': null,
       'desc': '',
