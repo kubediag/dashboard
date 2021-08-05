@@ -4,12 +4,24 @@
       <div class="diagnosis2Logo">
         <svg-icon icon-class="diagnosis2" />
       </div>
-      <strong
-        style="line-height: 50px"
-      >离线在线业务混合部署的计数优化和参数调整</strong>
-      <div style="float: right">
-        <el-button @click="cleanUp"> 清空 </el-button>
-        <el-button type="primary" @click="save"> 保存 </el-button>
+      <strong class="desc" :title="formData.desc">{{ formData.desc }}</strong>
+      <div v-if="!isView" style="float: right; padding: 5px 0">
+        <el-button
+          :disabled="dataListTree.children.length <= 0"
+          @click="cleanUp"
+        >
+          清空
+        </el-button>
+        <el-button
+          :disabled="dataListTree.children.length <= 0"
+          type="primary"
+          @click="dialogFormVisible = true"
+        >
+          保存
+        </el-button>
+      </div>
+      <div v-else style="float: right; padding: 7px 0">
+        <el-button @click="goBack"> 返回 </el-button>
       </div>
     </div>
     <div class="main">
@@ -19,54 +31,104 @@
       <div class="optionBox" style="width: 0">
         <!-- <ul>
           <li
-            v-for="item in options"
-            :key="item.value"
+            v-for="item in operationsData"
+            :key="item.name"
             :class="{
               'step-box': true,
-              'step-boxActive': item.value === targetTag.value,
+              'step-boxActive': item.name === targetTag.name,
             }"
             @click="optionFn(item)"
           >
-            {{ item.label }}
+            {{ item.name }}
           </li>
         </ul> -->
       </div>
     </div>
-    <el-drawer
-      :size="230"
-      title="我是标题"
-      :visible.sync="drawer"
-      :before-close="handleClose"
-    >
+    <!-- <el-drawer :size="230" :visible.sync="drawer" :before-close="handleClose" :show-close="false" :wrapperClosable="false"> -->
+    <el-drawer :size="230" :visible.sync="drawer" :before-close="handleClose">
+      <div slot="title">
+        <el-input
+          v-model="optionsSearchVal"
+          placeholder="请输入名称"
+          prefix-icon="el-icon-search"
+          @input="optionsSearchFn"
+        />
+      </div>
       <div class="optionBox">
         <ul>
           <li
-            v-for="item in options"
-            :key="item.value"
+            v-for="(item, i) in operationsData2"
+            :key="item.name + i"
             :class="{
               'step-box': true,
-              'step-boxActive': item.value === targetTag.value,
+              'step-boxActive': item.name === targetTag.name,
             }"
             @click="optionFn(item)"
           >
-            {{ item.label }}
+            {{ item.name }}
           </li>
         </ul>
       </div>
     </el-drawer>
+    <el-dialog title="确定创建" :visible.sync="dialogFormVisible" width="500px">
+      <el-form ref="formData" :model="formData" label-width="80px">
+        <el-form-item
+          label="诊断名称"
+          prop="name"
+          :rules="[
+            {
+              required: true,
+              message: '请输入诊断名称',
+              trigger: 'blur',
+            },
+          ]"
+        >
+          <!-- {
+              min: 0,
+              max: 253,
+              pattern: /^[a-z0-9]+([a-z,-.0-9]+)+[a-z0-9]+$/,
+              message: '只能输入小写字母、数字、中划线、逗号、点',
+            }, -->
+          <el-input
+            v-model="formData.name"
+            placeholder="请输入诊断名称"
+          />
+        </el-form-item>
+        <el-form-item label="描述" prop="desc">
+          <el-input
+            v-model="formData.desc"
+            placeholder="请输入描述"
+            type="textarea"
+            :rows="2"
+          />
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="save">确 定</el-button>
+      </div>
+    </el-dialog>
     <edit ref="edit" />
   </div>
 </template>
 
 <script>
+import { operations } from '@/api/operation.js'
 import edit from '../operation/edit.vue'
-import { JSONFromService } from './data.js'
+// import { JSONFromService } from './data.js'
 export default {
   components: { edit },
   props: {},
   data() {
     return {
-      dataListTree: JSONFromService || {},
+      dialogFormVisible: false,
+      formData: { name: '', desc: '', data: {}},
+      dataListTree: {
+        id: 0,
+        parentId: -1,
+        name: '开始',
+        children: []
+      },
       isTypeOf: null,
       isEmptyNode: null,
       getMuiltWrapper: null,
@@ -76,57 +138,124 @@ export default {
       api: null,
       EDIT_STATE: 'EDIT',
       drawer: false,
-      options: [
+      optionsSearchVal: '',
+      operationsData2: [],
+      rules: {
+        name: [
+          { required: true, message: '请输入诊断名称', trigger: 'blur' },
+          {
+            min: 3,
+            max: 5,
+            message: '只能输入字母、数字、中划线、下划线、点',
+            trigger: 'blur'
+          }
+        ]
+      },
+      operationsData: [
         {
           value: '选项1',
-          label: '黄金糕'
+          name: '操作1'
         },
         {
           value: '选项2',
-          label: '双皮奶'
+          name: '操作2'
         },
         {
           value: '选项3',
-          label: '蚵仔煎'
+          name: '操作3'
         },
         {
           value: '选项4',
-          label: '龙须面'
+          name: '操作4'
         },
         {
           value: '选项5',
-          label: '北京烤鸭'
+          name: '操作5'
+        },
+        {
+          value: '选项6',
+          name: '操作6'
+        },
+        {
+          value: '选项7',
+          name: '操作7'
+        },
+        {
+          value: '选项8',
+          name: '操作8'
+        },
+        {
+          value: '选项9',
+          name: '操作9'
         }
       ],
       commitIcon: null,
       commitIcon2: null,
       myindex: [],
       targetTag: {},
-      node2: {}
+      node2: {},
+      children2: {}
+    }
+  },
+  computed: {
+    isView() {
+      return this.$route.query.isView || false
+    }
+  },
+  watch: {
+    drawer(_new) {
+      const vm = this
+      if (_new) {
+        document.getElementsByClassName('stepsBox')[0].style.width =
+          document.getElementsByClassName('stepsBox')[0].clientWidth -
+          185 +
+          'px'
+        vm.optionsSearchFn('')
+      } else {
+        document.getElementsByClassName('stepsBox')[0].style.width = '100%'
+        vm.optionsSearchVal = ''
+      }
     }
   },
   created() {
     this.commonUtilFn()
+    this.operationsFn()
   },
   mounted() {
+    // console.log(this.isView, localStorage.getItem("viewDeta"));
+    if (this.isView) {
+      const viewDeta = JSON.parse(localStorage.getItem('viewDeta'))
+      this.formData.desc = viewDeta.desc
+      this.dataListTree.children[0] = viewDeta.JSONFromService2
+    }
     this.stepFn()
   },
-  updated() {
-    if (this.drawer) {
-      document.getElementsByClassName('stepsBox')[0].style.width =
-        document.getElementsByClassName('stepsBox')[0].clientWidth - 185 + 'px'
-    } else {
-      document.getElementsByClassName('stepsBox')[0].style.width = '100%'
-    }
+  beforeDestroy() {
+    localStorage.removeItem('viewDeta') // 删除
   },
-  beforeDestroy() {},
   methods: {
+    operationsFn() {
+      operations({})
+        .then((res) => {
+          this.operationsData = res.data
+          this.operationsData.forEach((v, i) => {
+            v.name = v.name + i
+          })
+        })
+        .catch(() => {})
+    },
     stepFn() {
       const vm = this
       const step = vm.Steps(document.querySelector('#steps'), {
         data: vm.dataListTree
       })
       step.init()
+      if (this.isView) {
+        const stepBoxAction = document.getElementsByClassName('step-box__action')
+        for (let i = 0; i < stepBoxAction.length; i++) {
+          stepBoxAction[i].style.display = 'none'
+        }
+      }
     },
 
     commonUtil() {
@@ -139,9 +268,9 @@ export default {
         },
         // 空节点
         isEmptyNode: function(node) {
-          // return !node.label;
-          // return !node.label && !node.state && !node.children;
-          return !node.label && !node.state
+          // return !node.name;
+          // return !node.name && !node.state && !node.children;
+          return !node.name && !node.state
         },
         // 获取一个多行wrapper
         getMuiltWrapper: function() {
@@ -184,10 +313,10 @@ export default {
           '<div class="step-box step-box' +
             node.id +
             '">' +
-            `<span>${node.label}</span>` +
+            `<span>${node.name}</span>` +
             '</div>'
         )
-        // const inputEl = vm.parseDom(`<span>${node.label}</span>`);
+        // const inputEl = vm.parseDom(`<span>${node.name}</span>`);
 
         const actionWrapper = vm.parseDom(
           '<div class="step-box__action"></div>'
@@ -201,17 +330,28 @@ export default {
 
         vm.commitIcon.addEventListener('click', function(e) {
           e.stopPropagation()
-          console.log(vm.node2, vm.targetTag, 'vm.targetTag')
-          node.label = vm.targetTag.label || null
-          node.value = vm.targetTag.value || null
-          if (vm.node2.label && !vm.targetTag.label) {
-            node.label = vm.node2.label
-            node.value = vm.node2.value
+          // console.log(vm.node2, vm.targetTag, "vm.targetTag");
+          node.name = vm.targetTag.name || null
+          node.desc = vm.targetTag.desc || null
+          if (vm.node2.name && !vm.targetTag.name) {
+            node.name = vm.node2.name
+            node.desc = vm.node2.desc
             node.children = vm.node2.children
           }
+          // if (vm.children2.name && !vm.targetTag.name) {
+          // vm.children2.forEach((v) => {
+          //   v.children&&v.children.forEach((k) => {
+          //     k.parentId = v.id;
+          //   });
+          // });
+          // node.name = vm.children2.name;
+          // node.desc = vm.children2.desc;
+          // node.children = vm.children2.children;
+          // }
           node.state = null
           vm.targetTag = {}
           vm.node2 = {}
+          // vm.children2 = [];
           vm.api.refresh()
         })
 
@@ -229,19 +369,14 @@ export default {
           '<div class="step-box step-box' +
             node.id +
             '">' +
-            `<span>${node.label}</span>` +
+            `<span>${node.name}</span>` +
             '</div>'
         )
-
         const actionWrapper = vm.parseDom(
           '<div class="step-box__action"></div>'
         )
         const tooltip = vm.parseDom(
-          `<div style="display: inline;"><i class="el-icon-warning-outline"></i><div class="popover popover${
-            node.id
-          }">${
-            node.label + node.id
-          }<div class="popper__arrow"></div></div></div>`
+          `<div style="display: inline;"><i class="el-icon-warning-outline"></i><div class="popover popover${node.id}">${node.desc}<div class="popper__arrow"></div></div></div>`
         )
         tooltip.addEventListener('click', function(e) {
           e.stopPropagation()
@@ -261,124 +396,111 @@ export default {
           // console.log("tooltip", "mouseleave");
         })
         const addIcon = vm.parseDom(
-          '<i class="iconfont el-icon-document-add"></i>'
+          '<i class="iconfont el-icon-document-add" title="向后同级新增"></i>'
         )
         const editIcon = vm.parseDom(
-          '<i class="iconfont el-icon-edit-outline"></i>'
+          '<i class="iconfont el-icon-edit-outline" title="编辑"></i>'
         )
         const removeIcon = vm.parseDom(
-          '<i class="iconfont el-icon-delete"></i>'
+          '<i class="iconfont el-icon-delete" title="删除"></i>'
         )
         const addRightIcon = vm.parseDom(
-          '<i class="iconfont addRightIcon el-icon-circle-plus-outline"></i>'
+          '<i class="iconfont addRightIcon el-icon-circle-plus-outline" title="向后新增"></i>'
         )
         const addLeftIcon = vm.parseDom(
-          '<i class="iconfont addLeftIcon el-icon-circle-plus-outline"></i>'
+          '<i class="iconfont addLeftIcon el-icon-circle-plus-outline" title="向前新增"></i>'
         )
         addLeftIcon.addEventListener('click', function(e) {
           e.stopPropagation()
-          // if (!vm.targetTag.label || !vm.targetTag.value) {
-          //   vm.$message({
-          //     message: "请先选择右侧标签",
+          // vm.$confirm(
+          //   `此操作将在“${node.name}”之前添加标签, 是否继续?`,
+          //   "提示",
+          //   {
+          //     confirmButtonText: "确定",
+          //     cancelButtonText: "取消",
           //     type: "warning",
-          //   });
-          //   return;
-          // }
-          vm.$confirm(
-            `此操作将在“${node.label}”之前添加标签, 是否继续?`,
-            '提示',
-            {
-              confirmButtonText: '确定',
-              cancelButtonText: '取消',
-              type: 'warning'
-            }
-          )
-            .then(() => {
-              vm.drawer = true
-              // vm.selectValue = "";
-              const children = node.children
-              if (!children) {
-                node.children = []
-              }
-              if (vm.isTypeOf(children, 'Object')) {
-                node.children = [children]
-              }
-              vm.node2 = JSON.parse(JSON.stringify(node))
-              console.log(vm.node2, 'vm.node2')
+          //   }
+          // )
+          //   .then(() => {
+          vm.drawer = true
+          // vm.selectValue = "";
+          const children = node.children
+          if (!children) {
+            node.children = []
+          }
+          if (vm.isTypeOf(children, 'Object')) {
+            node.children = [children]
+          }
+          vm.node2 = JSON.parse(JSON.stringify(node))
+          console.log(vm.node2, 'vm.node2')
 
-              node.children = [{ ...vm.node2 }]
-              // node.label = vm.targetTag.label;
-              // node.value = vm.targetTag.value;
-              node.label = ''
-              node.value = ''
-              node.id =
-                vm.node2.id +
-                1 +
-                vm.node2.children.length +
-                Math.round(Math.random() * 80 + 20)
-              node.parentId = vm.node2.parentId
-              node.state = vm.EDIT_STATE
-              node.children[0].parentId = node.id
-              vm.api.refresh()
-            })
-            .catch(() => {})
+          node.children = [{ ...vm.node2 }]
+          // node.name = vm.targetTag.name;
+          // node.desc = vm.targetTag.desc;
+          node.name = ''
+          node.desc = ''
+          node.id =
+            vm.node2.id +
+            1 +
+            vm.node2.children.length +
+            Math.round(Math.random() * 80 + 20)
+          node.parentId = vm.node2.parentId
+          node.state = vm.EDIT_STATE
+          node.children[0].parentId = node.id
+          vm.api.refresh()
+          // })
+          // .catch(() => {});
         })
         addRightIcon.addEventListener('click', function(e) {
           e.stopPropagation()
-          // if (!vm.targetTag.label || !vm.targetTag.value) {
-          //   vm.$message({
-          //     message: "请先选择右侧标签",
+          // vm.$confirm(
+          //   `此操作将在“${node.name}”之后添加标签, 是否继续?`,
+          //   "提示",
+          //   {
+          //     confirmButtonText: "确定",
+          //     cancelButtonText: "取消",
           //     type: "warning",
-          //   });
-          //   return;
-          // }
-          vm.$confirm(
-            `此操作将在“${node.label}”之后添加标签, 是否继续?`,
-            '提示',
+          //   }
+          // )
+          //   .then(() => {
+          vm.drawer = true
+          const children = node.children
+          vm.children2 = JSON.parse(JSON.stringify(node))
+          if (!children) {
+            node.children = []
+          }
+          if (vm.isTypeOf(children, 'Object')) {
+            node.children = [children]
+          }
+          node.children = [
             {
-              confirmButtonText: '确定',
-              cancelButtonText: '取消',
-              type: 'warning'
+              children: [...node.children],
+              id:
+                node.id +
+                1 +
+                node.children.length +
+                Math.round(Math.random() * 80 + 20),
+              parentId: node.id,
+              // name: vm.targetTag.name,
+              // desc: vm.targetTag.desc,
+              name: '',
+              desc: '',
+              state: vm.EDIT_STATE
             }
-          )
-            .then(() => {
-              vm.drawer = true
-              const children = node.children
-              if (!children) {
-                node.children = []
-              }
-              if (vm.isTypeOf(children, 'Object')) {
-                node.children = [children]
-              }
-              node.children = [
-                {
-                  children: [...node.children],
-                  id:
-                    node.id +
-                    1 +
-                    node.children.length +
-                    Math.round(Math.random() * 80 + 20),
-                  parentId: node.id,
-                  // label: vm.targetTag.label,
-                  // value: vm.targetTag.value,
-                  label: '',
-                  value: '',
-                  state: vm.EDIT_STATE
-                }
-              ]
-              node.children.forEach((v) => {
-                v.children.forEach((k) => {
-                  k.parentId = v.id
-                })
-              })
-              vm.api.refresh()
+          ]
+          node.children.forEach((v) => {
+            v.children.forEach((k) => {
+              k.parentId = v.id
             })
-            .catch(() => {})
+          })
+          vm.api.refresh()
+          // })
+          // .catch(() => {});
         })
 
         addIcon.addEventListener('click', function(e) {
           e.stopPropagation()
-          // if (!vm.targetTag.label || !vm.targetTag.value) {
+          // if (!vm.targetTag.name || !vm.targetTag.desc) {
           //   vm.$message({
           //     message: "请先选择右侧标签",
           //     type: "warning",
@@ -400,10 +522,10 @@ export default {
               node.children.length +
               Math.round(Math.random() * 80 + 20),
             parentId: node.id,
-            // label: vm.targetTag.label,
-            // value: vm.targetTag.value,
-            label: '',
-            value: '',
+            // name: vm.targetTag.name,
+            // desc: vm.targetTag.desc,
+            name: '',
+            desc: '',
             state: vm.EDIT_STATE
           })
           vm.api.refresh()
@@ -411,7 +533,7 @@ export default {
 
         editIcon.addEventListener('click', function(e) {
           e.stopPropagation()
-          // if (!vm.targetTag.label || !vm.targetTag.value) {
+          // if (!vm.targetTag.name || !vm.targetTag.desc) {
           //   vm.$message({
           //     message: "请先选择右侧标签",
           //     type: "warning",
@@ -420,10 +542,10 @@ export default {
           // }
           vm.drawer = true
           node.state = vm.EDIT_STATE
-          // node.label = vm.targetTag.label;
-          // node.value = vm.targetTag.value;
-          // vm.targetTag.label = node.label;
-          // vm.targetTag.value = node.value;
+          // node.name = vm.targetTag.name;
+          // node.desc = vm.targetTag.desc;
+          // vm.targetTag.name = node.name;
+          // vm.targetTag.desc = node.desc;
           vm.api.refresh()
         })
 
@@ -442,22 +564,25 @@ export default {
 
         stepBox.addEventListener('click', function(e) {
           e.stopImmediatePropagation()
-          if (node.label !== '开始' && node.id !== 0) {
-            vm.$refs.edit.openDrawer(node)
+          if (node.name !== '开始' && node.id !== 0) {
+            const data = vm.operationsData.filter(
+              (item) => item.name === node.name
+            )
+            vm.$refs.edit.openDrawer(data[0])
           }
           // console.log({ ...node }, e, e.stopImmediatePropagation, "click");
         })
 
         removeIcon.addEventListener('click', function(e) {
           e.stopPropagation()
-          vm.$confirm(`此操作将删除“${node.label}”标签, 是否继续?`, '提示', {
+          vm.$confirm(`此操作将删除“${node.name}”标签, 是否继续?`, '提示', {
             confirmButtonText: '确定',
             cancelButtonText: '取消',
             type: 'warning'
           })
             .then(() => {
               node.children = null
-              node.label = null
+              node.name = null
               node = undefined
               vm.api.refresh()
             })
@@ -763,7 +888,7 @@ export default {
       // console.log(data, vm.isTypeOf(data, "Object"));
       data &&
         data.forEach((v, i) => {
-          if (v.label == null) {
+          if (v.name == null) {
             data.splice(i, 1)
           }
           if (v && v.children) {
@@ -772,7 +897,17 @@ export default {
         })
     },
     save() {
-      console.log({ ...this.dataListTree }, 'save')
+      const vm = this
+      vm.$refs['formData'].validate((valid) => {
+        if (valid) {
+          vm.formData.data = { ...vm.dataListTree.children[0] }
+          console.log(vm.formData, 'save')
+          vm.dialogFormVisible = false
+        } else {
+          console.log('error submit!!')
+          return false
+        }
+      })
     },
     cleanUp() {
       const vm = this
@@ -788,6 +923,12 @@ export default {
         .catch(() => {})
       console.log({ ...vm.dataListTree }, 'cleanUp')
     },
+    goBack() {
+      this.$router.push({
+        name: 'arrangeList',
+        path: '/arrangeList/index'
+      })
+    },
     optionFn(row) {
       this.targetTag = row
       this.commitIcon.click()
@@ -797,6 +938,9 @@ export default {
       this.commitIcon.click()
       done()
       console.log('handleClose')
+    },
+    optionsSearchFn(val) {
+      this.operationsData2 = this.operationsData.filter(item => item.name.indexOf(val) !== -1)
     }
   }
 }
@@ -819,10 +963,20 @@ export default {
 }
 .main {
   width: 100%;
-  height: calc(100vh - 196px);
+  height: calc(100vh - 200px);
+}
+.desc {
+  height: 50px;
+  line-height: 50px;
+  display: inline-block;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  max-width: 68%;
 }
 .stepsBox {
-  width: calc(100% - 185px);
+  width: calc(100% - 0px);
+  // width: calc(100% - 185px);
   height: 100%;
   overflow: auto;
   float: left;
@@ -899,5 +1053,10 @@ export default {
   margin-left: -5px;
   border-top-width: 0;
   border-bottom-color: #fff;
+}
+/deep/ .el-drawer__header {
+  margin-bottom: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #f8f8f8;
 }
 </style>

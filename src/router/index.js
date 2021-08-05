@@ -58,7 +58,7 @@ const oAsyncRoutes = [
       {
         path: 'index',
         component: () => import('@/views/diagnosis/index'),
-        name: '诊断编排',
+        name: 'diagnosis',
         meta: { title: '诊断编排', icon: 'layout', affix: true }
       }
     ]
@@ -70,7 +70,7 @@ const oAsyncRoutes = [
       {
         path: 'index',
         component: () => import('@/views/arrangeList/index'),
-        name: '编排管理',
+        name: 'arrangeList',
         meta: { title: '编排管理', icon: 'arrange', affix: true }
       }
     ]
@@ -82,7 +82,7 @@ const oAsyncRoutes = [
       {
         path: 'index',
         component: () => import('@/views/operation/index'),
-        name: '操作管理',
+        name: 'operation',
         meta: { title: '操作管理', icon: 'operation', affix: true }
       }
     ]

@@ -1,12 +1,12 @@
 <template>
   <div class="app-container">
-    <el-tabs v-model="activeName" @tab-click="handleClick">
+    <!-- <el-tabs v-model="activeName" @tab-click="handleClick">
       <el-tab-pane label="所有诊断编排" name="all" />
       <el-tab-pane label="我的编排" name="me" />
-    </el-tabs>
+    </el-tabs> -->
     <div>
       <router-link to="/diagnosis/index">
-        <el-button type="primary" icon="el-icon-plus">创建诊断编排 </el-button>
+        <el-button type="primary" icon="el-icon-plus">创建诊断流程 </el-button>
       </router-link>
       <el-input
         v-model="diagnosisName"
@@ -19,7 +19,12 @@
     </div>
 
     <el-table
-      :data="tableData"
+      v-loading="isLoading"
+      :data="operationSetsData.filter(
+        (data) =>
+          !diagnosisName ||
+          data.name.toLowerCase().includes(diagnosisName.toLowerCase())
+      )"
       style="width: 100%; margin: 10px 0"
       :header-cell-style="{
         background: '#F5F7FA',
@@ -27,19 +32,28 @@
         fontWeight: '900',
       }"
     >
-      <el-table-column prop="date" label="诊断名称" show-overflow-tooltip />
-      <el-table-column prop="name" label="版本号" show-overflow-tooltip />
-      <el-table-column prop="address" label="描述" show-overflow-tooltip />
-      <el-table-column prop="address" label="维护者" show-overflow-tooltip />
-      <el-table-column prop="address" label="更新时间" show-overflow-tooltip />
+      <el-table-column prop="name" label="诊断名称" show-overflow-tooltip />
+      <el-table-column prop="version" label="版本号" show-overflow-tooltip />
+      <el-table-column prop="desc" label="描述" show-overflow-tooltip />
+      <el-table-column prop="maintainer" label="维护者" show-overflow-tooltip />
+      <el-table-column
+        prop="time"
+        label="更新时间"
+        :formatter="formatter"
+        show-overflow-tooltip
+      />
       <el-table-column label="操作" width="100">
-        <!-- <template slot-scope="scope"> -->
-        <el-button type="text" size="small">查看详情</el-button>
-        <!-- </template> -->
+        <template slot-scope="scope">
+          <el-button
+            type="text"
+            size="small"
+            @click="viewDeta(scope.row)"
+          >查看详情</el-button>
+        </template>
       </el-table-column>
     </el-table>
     <div style="text-align: right; margin: 20px 0">
-      <el-pagination
+      <!-- <el-pagination
         background
         :current-page="pagination.currentPage"
         :page-sizes="[10, 20, 50, 100]"
@@ -50,41 +64,24 @@
         @current-change="handleCurrentChange"
       >
         >
-      </el-pagination>
+      </el-pagination> -->
     </div>
   </div>
 </template>
 
 <script>
+import { operationSets } from '@/api/arrangeList.js'
+import { parseTime } from '@/utils'
+import { JSONFromService2 } from '../diagnosis/data.js'
 export default {
   components: {},
   props: {},
   data() {
     return {
+      isLoading: false,
       activeName: 'all',
       diagnosisName: '',
-      tableData: [
-        {
-          date: '2016-05-02',
-          name: '王小虎1',
-          address: '上海市普陀区金沙江路 1518 弄'
-        },
-        {
-          date: '2016-05-04',
-          name: '王小虎2',
-          address: '上海市普陀区金沙江路 1517 弄'
-        },
-        {
-          date: '2016-05-01',
-          name: '王小虎3',
-          address: '上海市普陀区金沙江路 1519 弄'
-        },
-        {
-          date: '2016-05-03',
-          name: '王小虎4',
-          address: '上海市普陀区金沙江路 1516 弄'
-        }
-      ],
+      operationSetsData: [],
       pagination: {
         currentPage: 1,
         pageSize: 10,
@@ -92,12 +89,36 @@ export default {
       }
     }
   },
-  created() {},
+  created() {
+    this.operationSetsFn()
+  },
   mounted() {},
   methods: {
+    operationSetsFn() {
+      this.isLoading = true
+      operationSets({})
+        .then((res) => {
+          this.operationSetsData = res.data
+          this.isLoading = false
+        })
+        .catch(() => {
+          this.isLoading = false
+        })
+    },
+    viewDeta(row) {
+      console.log(row)
+      this.$router.push({
+        name: 'diagnosis',
+        path: '/diagnosis/index',
+        // params: { id: row.id },
+        query: { isView: true }
+      })
+      row.JSONFromService2 = JSONFromService2
+      localStorage.setItem('viewDeta', JSON.stringify(row)) // 存
+    },
     handleClick(tab, event) {
       // console.log(tab.name, event);
-      this.tableData.unshift(this.tableData.pop())
+      this.operationSetsData.unshift(this.operationSetsData.pop())
     },
     diagnosisNameSearch() {
       this.handleClick()
@@ -109,6 +130,9 @@ export default {
     handleCurrentChange(val) {
       this.pagination.currentPage = val
       // this.activityListFn();
+    },
+    formatter(row) {
+      return parseTime(row.time || '', '{y}-{m}-{d} {h}:{i}:{s}')
     }
   }
 }

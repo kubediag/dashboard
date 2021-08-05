@@ -4,14 +4,14 @@ export function entityList(params) {
   return request({
     url: '/scrm/customer-base/list',
     method: 'POST',
-    data:params
+    data: params
   })
 }
 
-// 获取详情
-export function customerDetail(params) {
+// 获取列表
+export function operations(params) {
   return request({
-    url: '/scrm/customer-base/detail',
+    url: '/v1/operations',
     method: 'get',
     params
   })

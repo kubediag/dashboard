@@ -40,21 +40,21 @@ module.exports = {
   devServer: {
     open: true,
     proxy: {
-      '/scrm': {
+      '/v1': {
         target: process.env.VUE_APP_BASE_URL,
         ws: true,
         changeOrigin: true
       },
-      '/login': {
-        target: process.env.VUE_APP_BASE_URL,
-        ws: true,
-        changeOrigin: true
-      },
-      '/userinfo': {
-        target: process.env.VUE_APP_BASE_URL,
-        ws: true,
-        changeOrigin: true
-      },
+      // '/login': {
+      //   target: process.env.VUE_APP_BASE_URL,
+      //   ws: true,
+      //   changeOrigin: true
+      // },
+      // '/userinfo': {
+      //   target: process.env.VUE_APP_BASE_URL,
+      //   ws: true,
+      //   changeOrigin: true
+      // },
     }
   },
   // devServer: {
