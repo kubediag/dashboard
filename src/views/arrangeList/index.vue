@@ -72,7 +72,7 @@
 <script>
 import { operationSets } from '@/api/arrangeList.js'
 import { parseTime } from '@/utils'
-import { JSONFromService2 } from '../diagnosis/data.js'
+// import { JSONFromService2 } from '../diagnosis/data.js'
 export default {
   components: {},
   props: {},
@@ -106,14 +106,14 @@ export default {
         })
     },
     viewDeta(row) {
-      console.log(row)
+      console.log(row, row.detail.metadata.annotations['diagnosis.kubediag.org/dashboard/detail'])
       this.$router.push({
         name: 'diagnosis',
         path: '/diagnosis/index',
         // params: { id: row.id },
         query: { isView: true }
       })
-      row.JSONFromService2 = JSONFromService2
+      // row.JSONFromService2 = JSONFromService2
       localStorage.setItem('viewDeta', JSON.stringify(row)) // 存
     },
     handleClick(tab, event) {

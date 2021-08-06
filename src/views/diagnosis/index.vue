@@ -89,10 +89,7 @@
               pattern: /^[a-z0-9]+([a-z,-.0-9]+)+[a-z0-9]+$/,
               message: '只能输入小写字母、数字、中划线、逗号、点',
             }, -->
-          <el-input
-            v-model="formData.name"
-            placeholder="请输入诊断名称"
-          />
+          <el-input v-model="formData.name" placeholder="请输入诊断名称" />
         </el-form-item>
         <el-form-item label="描述" prop="desc">
           <el-input
@@ -113,6 +110,7 @@
 </template>
 
 <script>
+import { operationSets } from '@/api/diagnosis.js'
 import { operations } from '@/api/operation.js'
 import edit from '../operation/edit.vue'
 // import { JSONFromService } from './data.js'
@@ -225,8 +223,10 @@ export default {
     // console.log(this.isView, localStorage.getItem("viewDeta"));
     if (this.isView) {
       const viewDeta = JSON.parse(localStorage.getItem('viewDeta'))
+      const data = JSON.parse(viewDeta.detail.metadata.annotations['diagnosis.kubediag.org/dashboard/detail'])
       this.formData.desc = viewDeta.desc
-      this.dataListTree.children[0] = viewDeta.JSONFromService2
+      this.formData.name = viewDeta.name
+      this.dataListTree.children[0] = data.data
     }
     this.stepFn()
   },
@@ -238,9 +238,9 @@ export default {
       operations({})
         .then((res) => {
           this.operationsData = res.data
-          this.operationsData.forEach((v, i) => {
-            v.name = v.name + i
-          })
+          // this.operationsData.forEach((v, i) => {
+          //   v.name = v.name + i;
+          // });
         })
         .catch(() => {})
     },
@@ -251,7 +251,8 @@ export default {
       })
       step.init()
       if (this.isView) {
-        const stepBoxAction = document.getElementsByClassName('step-box__action')
+        const stepBoxAction =
+          document.getElementsByClassName('step-box__action')
         for (let i = 0; i < stepBoxAction.length; i++) {
           stepBoxAction[i].style.display = 'none'
         }
@@ -902,7 +903,17 @@ export default {
         if (valid) {
           vm.formData.data = { ...vm.dataListTree.children[0] }
           console.log(vm.formData, 'save')
-          vm.dialogFormVisible = false
+          operationSets(vm.formData)
+            .then((res) => {
+              this.$message({
+                message: '保存成功',
+                type: 'success'
+              })
+              vm.dialogFormVisible = false
+            })
+            .catch(() => {
+              vm.dialogFormVisible = false
+            })
         } else {
           console.log('error submit!!')
           return false
@@ -940,7 +951,9 @@ export default {
       console.log('handleClose')
     },
     optionsSearchFn(val) {
-      this.operationsData2 = this.operationsData.filter(item => item.name.indexOf(val) !== -1)
+      this.operationsData2 = this.operationsData.filter(
+        (item) => item.name.indexOf(val) !== -1
+      )
     }
   }
 }

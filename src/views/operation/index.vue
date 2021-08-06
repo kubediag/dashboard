@@ -118,9 +118,9 @@ export default {
       operations({})
         .then((res) => {
           if (res.success) {
-            res.data.forEach((v, i) => {
-              v.name = v.name + i
-            })
+            // res.data.forEach((v, i) => {
+            //   v.name = v.name + i
+            // })
             // 记得清除this.tableView 因为搜索的时候也会用这个，会造成上次数据没及时清除掉
             this.tableView = []
             this.pagination.total = res.data.length
