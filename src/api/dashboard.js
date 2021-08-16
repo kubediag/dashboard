@@ -1,18 +1,9 @@
 import request from '@/utils/request'
 
-// 图表1
-export function dashboardgraph(params) {
+// 资源数量
+export function summary(params) {
   return request({
-    url: '/scrm/dashboard/graph',
-    method: 'get',
-    params
-  })
-}
-
-// card数据
-export function dashboardTable(params) {
-  return request({
-    url: '/scrm/dashboard/table',
+    url: '/v1/summary',
     method: 'get',
     params
   })

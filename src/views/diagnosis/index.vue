@@ -28,24 +28,13 @@
       <div class="stepsBox">
         <div id="steps" />
       </div>
-      <div class="optionBox" style="width: 0">
-        <!-- <ul>
-          <li
-            v-for="item in operationsData"
-            :key="item.name"
-            :class="{
-              'step-box': true,
-              'step-boxActive': item.name === targetTag.name,
-            }"
-            @click="optionFn(item)"
-          >
-            {{ item.name }}
-          </li>
-        </ul> -->
-      </div>
     </div>
-    <!-- <el-drawer :size="230" :visible.sync="drawer" :before-close="handleClose" :show-close="false" :wrapperClosable="false"> -->
-    <el-drawer :size="230" :visible.sync="drawer" :before-close="handleClose">
+    <el-drawer
+      :size="230"
+      :visible.sync="drawer"
+      :before-close="handleClose"
+      class="options"
+    >
       <div slot="title">
         <el-input
           v-model="optionsSearchVal"
@@ -59,6 +48,7 @@
           <li
             v-for="(item, i) in operationsData2"
             :key="item.name + i"
+            :title="item.name"
             :class="{
               'step-box': true,
               'step-boxActive': item.name === targetTag.name,
@@ -113,7 +103,6 @@
 import { operationSets } from '@/api/diagnosis.js'
 import { operations } from '@/api/operation.js'
 import edit from '../operation/edit.vue'
-// import { JSONFromService } from './data.js'
 export default {
   components: { edit },
   props: {},
@@ -149,44 +138,7 @@ export default {
           }
         ]
       },
-      operationsData: [
-        {
-          value: '选项1',
-          name: '操作1'
-        },
-        {
-          value: '选项2',
-          name: '操作2'
-        },
-        {
-          value: '选项3',
-          name: '操作3'
-        },
-        {
-          value: '选项4',
-          name: '操作4'
-        },
-        {
-          value: '选项5',
-          name: '操作5'
-        },
-        {
-          value: '选项6',
-          name: '操作6'
-        },
-        {
-          value: '选项7',
-          name: '操作7'
-        },
-        {
-          value: '选项8',
-          name: '操作8'
-        },
-        {
-          value: '选项9',
-          name: '操作9'
-        }
-      ],
+      operationsData: [],
       commitIcon: null,
       commitIcon2: null,
       myindex: [],
@@ -213,21 +165,38 @@ export default {
         document.getElementsByClassName('stepsBox')[0].style.width = '100%'
         vm.optionsSearchVal = ''
       }
+    },
+    dataListTree: {
+      handler(newValue, oldValue) {
+        localStorage.setItem(
+          'diagnosisData',
+          JSON.stringify(newValue.children[0])
+        ) // 存
+        console.log(newValue, '监听')
+      },
+      deep: true
     }
   },
   created() {
     this.commonUtilFn()
     this.operationsFn()
-  },
-  mounted() {
-    // console.log(this.isView, localStorage.getItem("viewDeta"));
     if (this.isView) {
       const viewDeta = JSON.parse(localStorage.getItem('viewDeta'))
-      const data = JSON.parse(viewDeta.detail.metadata.annotations['diagnosis.kubediag.org/dashboard/detail'])
+      const req = viewDeta.req || {}
       this.formData.desc = viewDeta.desc
       this.formData.name = viewDeta.name
-      this.dataListTree.children[0] = data.data
+      this.dataListTree.children[0] = req.data
+    } else {
+      if (
+        localStorage.getItem('diagnosisData') &&
+        localStorage.getItem('diagnosisData') !== 'undefined'
+      ) {
+        const diagnosisData = JSON.parse(localStorage.getItem('diagnosisData'))
+        this.dataListTree.children[0] = diagnosisData
+      }
     }
+  },
+  mounted() {
     this.stepFn()
   },
   beforeDestroy() {
@@ -238,9 +207,6 @@ export default {
       operations({})
         .then((res) => {
           this.operationsData = res.data
-          // this.operationsData.forEach((v, i) => {
-          //   v.name = v.name + i;
-          // });
         })
         .catch(() => {})
     },
@@ -269,7 +235,6 @@ export default {
         },
         // 空节点
         isEmptyNode: function(node) {
-          // return !node.name;
           // return !node.name && !node.state && !node.children;
           return !node.name && !node.state
         },
@@ -314,10 +279,9 @@ export default {
           '<div class="step-box step-box' +
             node.id +
             '">' +
-            `<span>${node.name}</span>` +
+            `<span title="${node.name}">${node.name}</span>` +
             '</div>'
         )
-        // const inputEl = vm.parseDom(`<span>${node.name}</span>`);
 
         const actionWrapper = vm.parseDom(
           '<div class="step-box__action"></div>'
@@ -331,28 +295,16 @@ export default {
 
         vm.commitIcon.addEventListener('click', function(e) {
           e.stopPropagation()
-          // console.log(vm.node2, vm.targetTag, "vm.targetTag");
           node.name = vm.targetTag.name || null
-          node.desc = vm.targetTag.desc || null
+          node.desc = vm.targetTag.desc || '暂无描述'
           if (vm.node2.name && !vm.targetTag.name) {
             node.name = vm.node2.name
-            node.desc = vm.node2.desc
+            node.desc = vm.node2.desc || '暂无描述'
             node.children = vm.node2.children
           }
-          // if (vm.children2.name && !vm.targetTag.name) {
-          // vm.children2.forEach((v) => {
-          //   v.children&&v.children.forEach((k) => {
-          //     k.parentId = v.id;
-          //   });
-          // });
-          // node.name = vm.children2.name;
-          // node.desc = vm.children2.desc;
-          // node.children = vm.children2.children;
-          // }
           node.state = null
           vm.targetTag = {}
           vm.node2 = {}
-          // vm.children2 = [];
           vm.api.refresh()
         })
 
@@ -364,20 +316,23 @@ export default {
         actionWrapper.appendChild(vm.commitIcon)
         actionWrapper.appendChild(cancelIcon)
         stepBox.appendChild(actionWrapper)
-        // stepBox.appendChild(inputEl);
       } else {
         stepBox = vm.parseDom(
           '<div class="step-box step-box' +
             node.id +
             '">' +
-            `<span>${node.name}</span>` +
+            `<span title="${node.name}">${node.name}</span>` +
             '</div>'
         )
         const actionWrapper = vm.parseDom(
           '<div class="step-box__action"></div>'
         )
         const tooltip = vm.parseDom(
-          `<div style="display: inline;"><i class="el-icon-warning-outline"></i><div class="popover popover${node.id}">${node.desc}<div class="popper__arrow"></div></div></div>`
+          `<div><i class="el-icon-warning-outline"></i><div class="popover popover${
+            node.id
+          }">${
+            node.desc || '暂无描述'
+          }<div class="popper__arrow"></div></div></div>`
         )
         tooltip.addEventListener('click', function(e) {
           e.stopPropagation()
@@ -387,14 +342,13 @@ export default {
           document.getElementsByClassName(
             'popover' + node.id
           )[0].style.display = 'block'
-          // console.log("tooltip", "mouseenter");
+          console.log('tooltip', 'mouseenter')
         })
         tooltip.addEventListener('mouseleave', function(e) {
           e.stopPropagation()
           document.getElementsByClassName(
             'popover' + node.id
           )[0].style.display = 'none'
-          // console.log("tooltip", "mouseleave");
         })
         const addIcon = vm.parseDom(
           '<i class="iconfont el-icon-document-add" title="向后同级新增"></i>'
@@ -413,18 +367,7 @@ export default {
         )
         addLeftIcon.addEventListener('click', function(e) {
           e.stopPropagation()
-          // vm.$confirm(
-          //   `此操作将在“${node.name}”之前添加标签, 是否继续?`,
-          //   "提示",
-          //   {
-          //     confirmButtonText: "确定",
-          //     cancelButtonText: "取消",
-          //     type: "warning",
-          //   }
-          // )
-          //   .then(() => {
           vm.drawer = true
-          // vm.selectValue = "";
           const children = node.children
           if (!children) {
             node.children = []
@@ -436,8 +379,6 @@ export default {
           console.log(vm.node2, 'vm.node2')
 
           node.children = [{ ...vm.node2 }]
-          // node.name = vm.targetTag.name;
-          // node.desc = vm.targetTag.desc;
           node.name = ''
           node.desc = ''
           node.id =
@@ -449,21 +390,9 @@ export default {
           node.state = vm.EDIT_STATE
           node.children[0].parentId = node.id
           vm.api.refresh()
-          // })
-          // .catch(() => {});
         })
         addRightIcon.addEventListener('click', function(e) {
           e.stopPropagation()
-          // vm.$confirm(
-          //   `此操作将在“${node.name}”之后添加标签, 是否继续?`,
-          //   "提示",
-          //   {
-          //     confirmButtonText: "确定",
-          //     cancelButtonText: "取消",
-          //     type: "warning",
-          //   }
-          // )
-          //   .then(() => {
           vm.drawer = true
           const children = node.children
           vm.children2 = JSON.parse(JSON.stringify(node))
@@ -482,8 +411,6 @@ export default {
                 node.children.length +
                 Math.round(Math.random() * 80 + 20),
               parentId: node.id,
-              // name: vm.targetTag.name,
-              // desc: vm.targetTag.desc,
               name: '',
               desc: '',
               state: vm.EDIT_STATE
@@ -495,19 +422,10 @@ export default {
             })
           })
           vm.api.refresh()
-          // })
-          // .catch(() => {});
         })
 
         addIcon.addEventListener('click', function(e) {
           e.stopPropagation()
-          // if (!vm.targetTag.name || !vm.targetTag.desc) {
-          //   vm.$message({
-          //     message: "请先选择右侧标签",
-          //     type: "warning",
-          //   });
-          //   return;
-          // }
           vm.drawer = true
           const children = node.children
           if (!children) {
@@ -523,8 +441,6 @@ export default {
               node.children.length +
               Math.round(Math.random() * 80 + 20),
             parentId: node.id,
-            // name: vm.targetTag.name,
-            // desc: vm.targetTag.desc,
             name: '',
             desc: '',
             state: vm.EDIT_STATE
@@ -534,19 +450,8 @@ export default {
 
         editIcon.addEventListener('click', function(e) {
           e.stopPropagation()
-          // if (!vm.targetTag.name || !vm.targetTag.desc) {
-          //   vm.$message({
-          //     message: "请先选择右侧标签",
-          //     type: "warning",
-          //   });
-          //   return;
-          // }
           vm.drawer = true
           node.state = vm.EDIT_STATE
-          // node.name = vm.targetTag.name;
-          // node.desc = vm.targetTag.desc;
-          // vm.targetTag.name = node.name;
-          // vm.targetTag.desc = node.desc;
           vm.api.refresh()
         })
 
@@ -554,13 +459,11 @@ export default {
           e.stopImmediatePropagation()
           vm.findParent([vm.dataListTree], node)
           vm.lookup(node)
-          // console.log(vm.dataListTree, { ...node }, "mousedown");
         })
         stepBox.addEventListener('mouseleave', function(e) {
           e.stopImmediatePropagation()
           vm.findParentCancel([vm.dataListTree], node)
           vm.lookupCancel(node)
-          // console.log({ ...node }, "mouseout");
         })
 
         stepBox.addEventListener('click', function(e) {
@@ -677,7 +580,6 @@ export default {
     },
     lookup(data) {
       const vm = this
-      // console.log(data, document.getElementsByClassName("step-box" + data.id));
       const boxActive = document.getElementsByClassName(
         'step-box' + data.id
       )[0]
@@ -694,7 +596,6 @@ export default {
     },
     lookupCancel(data) {
       const vm = this
-      // console.log(data, document.getElementsByClassName("step-box" + data.id));
       const boxActive = document.getElementsByClassName(
         'step-box' + data.id
       )[0]
@@ -770,10 +671,7 @@ export default {
     drawDotsAndLine(stepWrapper, first) {
       const vm = this
       const getDotLeft = function() {
-        return vm.parseDom(
-          // '<span class="step-dot left"></span>'
-          '<i class="el-icon-caret-right step-dot left"></i>'
-        )
+        return vm.parseDom('<i class="el-icon-caret-right step-dot left"></i>')
       }
       const getDotRight = function() {
         return vm.parseDom('<span class="step-dot right"></span>')
@@ -886,7 +784,6 @@ export default {
     },
     delempty(data) {
       const vm = this
-      // console.log(data, vm.isTypeOf(data, "Object"));
       data &&
         data.forEach((v, i) => {
           if (v.name == null) {
@@ -948,7 +845,6 @@ export default {
     handleClose(done) {
       this.commitIcon.click()
       done()
-      console.log('handleClose')
     },
     optionsSearchFn(val) {
       this.operationsData2 = this.operationsData.filter(
@@ -1011,6 +907,10 @@ export default {
 }
 .optionBox ul li {
   margin: 10px auto;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  padding: 0 10px;
 }
 /deep/ .addRightIcon {
   position: absolute;
@@ -1046,7 +946,7 @@ export default {
   // text-align-last: left;
   white-space: normal;
   position: absolute;
-  top: 30px;
+  top: 62px;
   left: 0;
   box-shadow: 0 0 10px #eee;
   // transform-origin: center top;
@@ -1056,7 +956,7 @@ export default {
   content: " ";
   border-width: 8px;
   position: absolute;
-  display: block;
+  display: none;
   width: 0;
   height: 0;
   border-color: transparent;
@@ -1067,7 +967,7 @@ export default {
   border-top-width: 0;
   border-bottom-color: #fff;
 }
-/deep/ .el-drawer__header {
+.options /deep/ .el-drawer__header {
   margin-bottom: 12px;
   padding-bottom: 12px;
   border-bottom: 1px solid #f8f8f8;

@@ -14,13 +14,6 @@
       />
     </div>
 
-    <!-- :data="
-        tableView.filter(
-          (data) =>
-            !diagnosisName ||
-            data.name.toLowerCase().includes(diagnosisName.toLowerCase())
-        )
-      " -->
     <el-table
       :data="tableView"
       style="width: 100%; margin: 10px 0"
@@ -68,18 +61,6 @@
         @tables="tables"
         @handleSizeChange="handleSizeChange"
       />
-      <!-- <el-pagination
-        background
-        :current-page="pagination.currentPage"
-        :page-sizes="[10, 20, 50, 100]"
-        :page-size="pagination.pageSize"
-        layout="total, sizes, prev, pager, next, jumper"
-        :total="pagination.total"
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-      >
-        >
-      </el-pagination> -->
     </div>
     <edit ref="edit" />
   </div>
@@ -104,7 +85,7 @@ export default {
       pagination: {
         currentPage: 1,
         pageSize: 10,
-        total: 100
+        total: 0
       }
     }
   },
@@ -118,9 +99,6 @@ export default {
       operations({})
         .then((res) => {
           if (res.success) {
-            // res.data.forEach((v, i) => {
-            //   v.name = v.name + i
-            // })
             // 记得清除this.tableView 因为搜索的时候也会用这个，会造成上次数据没及时清除掉
             this.tableView = []
             this.pagination.total = res.data.length
@@ -185,7 +163,6 @@ export default {
     },
     handleCurrentChange(val) {
       this.pagination.currentPage = val
-      // this.activityListFn();
     },
     formatter(row) {
       return parseTime(row.time || '', '{y}-{m}-{d} {h}:{i}:{s}')

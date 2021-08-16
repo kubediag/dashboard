@@ -20,11 +20,7 @@
 
     <el-table
       v-loading="isLoading"
-      :data="operationSetsData.filter(
-        (data) =>
-          !diagnosisName ||
-          data.name.toLowerCase().includes(diagnosisName.toLowerCase())
-      )"
+      :data="tableView"
       style="width: 100%; margin: 10px 0"
       :header-cell-style="{
         background: '#F5F7FA',
@@ -32,7 +28,13 @@
         fontWeight: '900',
       }"
     >
-      <el-table-column prop="name" label="诊断名称" show-overflow-tooltip />
+      <el-table-column prop="name" label="诊断名称" show-overflow-tooltip>
+        <template slot-scope="scope">
+          <el-button type="text" size="small" @click="editData(scope.row)">{{
+            scope.row.name
+          }}</el-button>
+        </template>
+      </el-table-column>
       <el-table-column prop="version" label="版本号" show-overflow-tooltip />
       <el-table-column prop="desc" label="描述" show-overflow-tooltip />
       <el-table-column prop="maintainer" label="维护者" show-overflow-tooltip />
@@ -45,6 +47,7 @@
       <el-table-column label="操作" width="100">
         <template slot-scope="scope">
           <el-button
+            v-if="scope.row.req"
             type="text"
             size="small"
             @click="viewDeta(scope.row)"
@@ -53,35 +56,35 @@
       </el-table-column>
     </el-table>
     <div style="text-align: right; margin: 20px 0">
-      <!-- <el-pagination
-        background
-        :current-page="pagination.currentPage"
-        :page-sizes="[10, 20, 50, 100]"
+      <pagination
+        class="page"
+        :total-count="pagination.total"
         :page-size="pagination.pageSize"
-        layout="total, sizes, prev, pager, next, jumper"
-        :total="pagination.total"
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-      >
-        >
-      </el-pagination> -->
+        :table-data="operationSetsData2"
+        @tables="tables"
+        @handleSizeChange="handleSizeChange"
+      />
     </div>
+    <edit ref="edit" />
   </div>
 </template>
 
 <script>
 import { operationSets } from '@/api/arrangeList.js'
 import { parseTime } from '@/utils'
-// import { JSONFromService2 } from '../diagnosis/data.js'
+import edit from '../operation/edit.vue'
+import pagination from '../operation/pagination.vue'
 export default {
-  components: {},
+  components: { edit, pagination },
   props: {},
   data() {
     return {
       isLoading: false,
       activeName: 'all',
       diagnosisName: '',
+      operationSetsData2: [],
       operationSetsData: [],
+      tableView: [],
       pagination: {
         currentPage: 1,
         pageSize: 10,
@@ -98,41 +101,71 @@ export default {
       this.isLoading = true
       operationSets({})
         .then((res) => {
-          this.operationSetsData = res.data
+          if (res.success) {
+            // 记得清除this.tableView 因为搜索的时候也会用这个，会造成上次数据没及时清除掉
+            this.tableView = []
+            this.pagination.total = res.data.length
+            // 进入if 因为他有多页码 else 只有1页
+            if (res.data.length >= this.pagination.pageSize) {
+              for (let i = 0; i < this.pagination.pageSize; i++) {
+                this.tableView.push(res.data[i])
+              }
+            } else {
+              this.tableView = res.data
+            }
+            this.operationSetsData = res.data
+            this.operationSetsData2 = res.data
+          }
           this.isLoading = false
         })
         .catch(() => {
           this.isLoading = false
         })
     },
+    operationSetsFn2() {
+      this.tableView = []
+      this.pagination.total = this.operationSetsData2.length
+      // 进入if 因为他有多页码 else 只有1页
+      if (this.operationSetsData2.length >= this.pagination.pageSize) {
+        for (let i = 0; i < this.pagination.pageSize; i++) {
+          this.tableView.push(this.operationSetsData2[i])
+        }
+      } else {
+        this.tableView = this.operationSetsData2
+      }
+    },
+    diagnosisNameSearch() {
+      this.operationSetsData2 = this.operationSetsData.filter(item => item.name.indexOf(this.diagnosisName) !== -1)
+      this.operationSetsFn2()
+    },
+    // 用户点击页码组件返回的数据
+    tables(table) {
+      this.tableView = table
+    },
     viewDeta(row) {
-      console.log(row, row.detail.metadata.annotations['diagnosis.kubediag.org/dashboard/detail'])
       this.$router.push({
         name: 'diagnosis',
         path: '/diagnosis/index',
         // params: { id: row.id },
         query: { isView: true }
       })
-      // row.JSONFromService2 = JSONFromService2
       localStorage.setItem('viewDeta', JSON.stringify(row)) // 存
     },
     handleClick(tab, event) {
-      // console.log(tab.name, event);
       this.operationSetsData.unshift(this.operationSetsData.pop())
-    },
-    diagnosisNameSearch() {
-      this.handleClick()
     },
     handleSizeChange(val) {
       this.pagination.pageSize = val
-      // this.activityListFn();
+      this.operationSetsFn2()
     },
     handleCurrentChange(val) {
       this.pagination.currentPage = val
-      // this.activityListFn();
     },
     formatter(row) {
       return parseTime(row.time || '', '{y}-{m}-{d} {h}:{i}:{s}')
+    },
+    editData(row) {
+      this.$refs.edit.openDrawer(row)
     }
   }
 }

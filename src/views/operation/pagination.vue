@@ -6,7 +6,7 @@
     :total="totalCount"
     :page-size="pageSize"
     :current-page="currentPage"
-    :page-sizes="[1, 2, 5, 9, tableData.length]"
+    :page-sizes="[10, 20, 50, 100]"
     @current-change="handleCurrentChange"
     @size-change="handleSizeChange"
   />

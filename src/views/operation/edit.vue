@@ -39,45 +39,12 @@
           <el-form-item label="要求:">
             <el-input v-model="form.desc" type="textarea" :rows="2" />
           </el-form-item>
-          <el-form-item label="参数列表:" style="margin: 0" />
-          <div style="margin: 0 0 20px 20px">
-            <el-table
-              size="mini"
-              :data="tableData"
-              style="width: 100%"
-              :header-cell-style="{
-                background: '#F5F7FA',
-                color: '#000',
-                fontWeight: '900',
-              }"
-            >
-              <el-table-column
-                prop="date"
-                label="键名称"
-                align="center"
-                show-overflow-tooltip
-              />
-              <el-table-column
-                prop="address"
-                label="描述"
-                align="center"
-                show-overflow-tooltip
-              />
-              <el-table-column
-                prop="name"
-                label="是否必须"
-                align="center"
-                show-overflow-tooltip
-                width="80"
-              />
-            </el-table>
-          </div>
           <el-form-item
-            label="运维结果列表:"
+            v-if="form.detail.spec.processor"
+            label="参数列表:"
             style="margin: 0"
-            label-width="120px"
           />
-          <div style="margin: 0 0 20px 20px">
+          <div v-if="form.detail.spec.processor" style="margin: 0 0 20px 20px">
             <el-table
               size="mini"
               :data="tableData"
@@ -89,23 +56,16 @@
               }"
             >
               <el-table-column
-                prop="date"
-                label="键名称"
-                align="center"
-                show-overflow-tooltip
-              />
-              <el-table-column
-                prop="address"
-                label="描述"
-                align="center"
-                show-overflow-tooltip
-              />
-              <el-table-column
                 prop="name"
-                label="是否必须"
+                label="名称"
                 align="center"
                 show-overflow-tooltip
-                width="80"
+              />
+              <el-table-column
+                prop="value"
+                label="值"
+                align="center"
+                show-overflow-tooltip
               />
             </el-table>
           </div>
@@ -129,30 +89,16 @@ export default {
       activeName: 'details',
       drawer: false,
       form: {
-        date: '2016-05-02',
-        name: '王小虎1',
-        address: '上海市普陀区金沙江路 1518 弄'
+        detail: {
+          spec: {
+            processor: {}
+          }
+        }
       },
       tableData: [
         {
-          date: '2016-05-02',
-          name: '王小虎1',
-          address: '上海市普陀区金沙江路 1518 弄'
-        },
-        {
-          date: '2016-05-04',
-          name: '王小虎2',
-          address: '上海市普陀区金沙江路 1517 弄'
-        },
-        {
-          date: '2016-05-01',
-          name: '王小虎3',
-          address: '上海市普陀区金沙江路 1519 弄'
-        },
-        {
-          date: '2016-05-03',
-          name: '王小虎4',
-          address: '上海市普陀区金沙江路 1516 弄'
+          name: '名称',
+          value: '值'
         }
       ]
     }
@@ -163,7 +109,40 @@ export default {
     openDrawer(row) {
       this.drawer = true
       this.form = row
-      console.log(row, 'row')
+      this.tableData = []
+      if (row.detail && row.detail.spec && row.detail.spec.processor) {
+        const processor = row.detail.spec.processor
+        if (processor.HTTPServer) {
+          this.tableData = [
+            {
+              name: 'HTTPServer',
+              value: processor['HTTPServer']
+            },
+            {
+              name: 'timeoutSeconds',
+              value: processor['timeoutSeconds']
+            }
+          ]
+        } else if (processor.HTTPServer) {
+          this.tableData = [
+            {
+              name: 'ScriptRunner',
+              value: processor['ScriptRunner']
+            },
+            {
+              name: 'timeoutSeconds',
+              value: processor['timeoutSeconds']
+            }
+          ]
+        } else {
+          for (const v in processor) {
+            this.tableData.push({
+              name: v,
+              value: processor[v]
+            })
+          }
+        }
+      }
     },
     // 处理json数据，采用正则过滤出不同类型参数
     syntaxHighlight(json) {
