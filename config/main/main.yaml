@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kubediag-dashboard
+  namespace: kubediag
+spec:
+  selector:
+    matchLabels:
+      app: kubediag-dashboard
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: kubediag-dashboard
+    spec:
+      containers:
+      - command:
+        - /main
+        image: kubediag-dashboard:latest
+        name: dashboard
+        resources:
+          limits:
+            cpu: 500m
+            memory: 500Mi
+          requests:
+            cpu: 500m
+            memory: 500Mi
+      terminationGracePeriodSeconds: 10
+      serviceAccountName: kubediag-dashboard
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kubediag-dashboard
+  namespace: kubediag
+spec:
+  selector:
+      app: kubediag-dashboard
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: kubediag-dashboard
+  namespace: kubediag
