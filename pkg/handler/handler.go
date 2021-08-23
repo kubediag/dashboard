@@ -17,6 +17,7 @@
 package handler
 
 import (
+	"errors"
 	"io"
 	"net/http"
 
@@ -28,16 +29,29 @@ import (
 )
 
 const (
-	index  = "/"
-	static = "/static"
-	health = "/health"
+	index     = "/"
+	static    = "/static"
+	health    = "/health"
+	checkName = "/checkName/{kind}/{name}"
 
-	v1                  = "/v1"
-	summaryURIPrefix    = "/summary"
+	v1               = "/v1"
+	summaryURIPrefix = "/summary"
+
 	operationsURIPrefix = "/operations"
+	operationURIPrefix  = "/operations/{name}"
 
 	operationSetsURIPrefix = "/operationSets"
 	operationSetURIPrefix  = "/operationSets/{name}"
+
+	triggersURIPrefix = "/triggers"
+	triggerURIPrefix  = "/triggers/{name}"
+
+	diagnosesURIPrefix = "/diagnoses"
+	diagnosisURIPrefix = "/diagnoses/{name}"
+
+	nodesURIPrefix     = "/nodes"
+	namespaceURIPrefix = "/namespaces"
+	podsURIPrefix      = "/namespaces/{name}/pods"
 )
 
 //error message
@@ -69,6 +83,11 @@ func (server *httpServer) static(writer http.ResponseWriter, req *http.Request) 
 	http.FileServer(http.Dir("web")).ServeHTTP(writer, req)
 }
 func (server *httpServer) checkHealth(writer http.ResponseWriter, req *http.Request) {
+	GenerateHandlerResult(writer, nil, nil, true)
+}
+
+//check name valid and not exist
+func (server *httpServer) checkName(writer http.ResponseWriter, req *http.Request) {
 	GenerateHandlerResult(writer, nil, nil, true)
 }
 
@@ -122,29 +141,88 @@ func (server *httpServer) operationSetList(writer http.ResponseWriter, req *http
 }
 
 func (server *httpServer) operationSetAdd(writer http.ResponseWriter, req *http.Request) {
-	if req.Body == nil {
-		GenerateHandlerResult(writer, nil, errorInvalidParams, false)
-		return
-	}
-	body, err := io.ReadAll(req.Body)
-	if err != nil {
-		GenerateHandlerResult(writer, nil, GenerateErrorMessage(errorInvalidParams, err), false)
-		return
-	}
 	var createReq OperationSetCreateReq
-	jsonErr := json.Unmarshal(body, &createReq)
-	if jsonErr != nil {
-		GenerateHandlerResult(writer, nil, GenerateErrorMessage(errorInvalidParams, jsonErr), false)
+	body, err := parseBody(req)
+	if err != nil {
+		GenerateHandlerResult(writer, nil, err.Error(), false)
+		return
+	}
+	err = json.Unmarshal(body, &createReq)
+	if err != nil {
+		GenerateHandlerResult(writer, nil, err.Error(), false)
 		return
 	}
 	operationSet, paths := NewOperationSet(&createReq, body)
 	opts := runtimeclient.CreateOptions{}
 	createErr := server.cli.OperationSetAdd(operationSet, &opts)
 	if createErr != nil {
-		GenerateHandlerResult(writer, nil, GenerateErrorMessage("", createErr), false)
+		GenerateHandlerResult(writer, nil, createErr.Error(), false)
 		return
 	}
 	GenerateHandlerResult(writer, nil, paths, true)
+}
+
+func (server *httpServer) diagnosisList(writer http.ResponseWriter, req *http.Request) {
+	opts := &runtimeclient.ListOptions{}
+	diagnosisList, err := server.cli.DiagnosisList(opts)
+	if err != nil {
+		GenerateHandlerResult(writer, nil, err, false)
+		return
+	}
+	result := []DiagnosisVO{}
+	for index := range diagnosisList.Items {
+		result = append(result, *NewDiagnosisVO(&diagnosisList.Items[index]))
+	}
+	GenerateHandlerResult(writer, nil, result, true)
+}
+
+func (server *httpServer) diagnosisAdd(writer http.ResponseWriter, req *http.Request) {
+	var createReq DiagnosisCreateReq
+	err := parseBodyWithObj(req, &createReq)
+	if err != nil {
+		GenerateHandlerResult(writer, nil, err.Error(), false)
+		return
+	}
+	diagnosis := NewDiagnosis(&createReq)
+	opts := runtimeclient.CreateOptions{}
+	err = server.cli.DiagnosisAdd(diagnosis, &opts)
+	if err != nil {
+		GenerateHandlerResult(writer, nil, err.Error(), false)
+		return
+	}
+	GenerateHandlerResult(writer, nil, "", true)
+
+}
+
+func (server *httpServer) triggerList(writer http.ResponseWriter, req *http.Request) {
+	opts := &runtimeclient.ListOptions{}
+	triggerList, err := server.cli.TriggerList(opts)
+	if err != nil {
+		GenerateHandlerResult(writer, nil, err, false)
+		return
+	}
+	result := []TriggerVO{}
+	for index := range triggerList.Items {
+		result = append(result, *NewTriggerVO(&triggerList.Items[index]))
+	}
+	GenerateHandlerResult(writer, nil, result, true)
+}
+
+func (server *httpServer) triggerAdd(writer http.ResponseWriter, req *http.Request) {
+	var createReq TriggerCreateReq
+	err := parseBodyWithObj(req, &createReq)
+	if err != nil {
+		GenerateHandlerResult(writer, nil, err.Error(), false)
+		return
+	}
+	trigger := NewTrigger(&createReq)
+	opts := runtimeclient.CreateOptions{}
+	err = server.cli.TriggerAdd(trigger, &opts)
+	if err != nil {
+		GenerateHandlerResult(writer, nil, err.Error(), false)
+		return
+	}
+	GenerateHandlerResult(writer, nil, "", true)
 }
 
 func (server *httpServer) StartHttpServer() error {
@@ -164,9 +242,40 @@ func (server *httpServer) StartHttpServer() error {
 	router.HandleFunc(v1Path(operationSetsURIPrefix), server.operationSetList).Methods(http.MethodGet)
 	router.HandleFunc(v1Path(operationSetsURIPrefix), server.operationSetAdd).Methods(http.MethodPost)
 
+	//trigger v1
+	router.HandleFunc(v1Path(triggersURIPrefix), server.triggerList).Methods(http.MethodGet)
+	router.HandleFunc(v1Path(triggerURIPrefix), server.triggerAdd).Methods(http.MethodPost)
+
+	//diagnosis v1
+	router.HandleFunc(v1Path(diagnosesURIPrefix), server.diagnosisList).Methods(http.MethodGet)
+	router.HandleFunc(v1Path(diagnosesURIPrefix), server.diagnosisAdd).Methods(http.MethodPost)
+
 	return http.ListenAndServe(server.host+":"+server.port, router)
 }
 
 func v1Path(path string) string {
 	return v1 + path
+}
+
+func parseBodyWithObj(req *http.Request, obj interface{}) error {
+	body, err := parseBody(req)
+	if err != nil {
+		return err
+	}
+	jsonErr := json.Unmarshal(body, &obj)
+	if jsonErr != nil {
+		return jsonErr
+	}
+	return nil
+}
+
+func parseBody(req *http.Request) ([]byte, error) {
+	if req.Body == nil {
+		return nil, errors.New(errorInvalidParams)
+	}
+	body, err := io.ReadAll(req.Body)
+	if err != nil {
+		return nil, err
+	}
+	return body, nil
 }
