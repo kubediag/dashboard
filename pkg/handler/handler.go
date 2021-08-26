@@ -25,6 +25,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/kubediag/dashboard/pkg/client"
+	"k8s.io/apimachinery/pkg/util/validation"
 	runtimeclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
@@ -32,7 +33,7 @@ const (
 	index     = "/"
 	static    = "/static"
 	health    = "/health"
-	checkName = "/checkName/{kind}/{name}"
+	checkName = "/checkName/{name}"
 
 	v1               = "/v1"
 	summaryURIPrefix = "/summary"
@@ -51,7 +52,7 @@ const (
 
 	nodesURIPrefix     = "/nodes"
 	namespaceURIPrefix = "/namespaces"
-	podsURIPrefix      = "/namespaces/{name}/pods"
+	podsURIPrefix      = "/namespaces/{namespace}/pods"
 )
 
 //error message
@@ -86,8 +87,14 @@ func (server *httpServer) checkHealth(writer http.ResponseWriter, req *http.Requ
 	GenerateHandlerResult(writer, nil, nil, true)
 }
 
-//check name valid and not exist
+//check name valid, refer: https://kubernetes.io/docs/concepts/overview/working-with-objects/names
 func (server *httpServer) checkName(writer http.ResponseWriter, req *http.Request) {
+	vars := mux.Vars(req)
+	err := validation.IsDNS1123Subdomain(vars["name"])
+	if err != nil {
+		GenerateHandlerResult(writer, nil, err, false)
+		return
+	}
 	GenerateHandlerResult(writer, nil, nil, true)
 }
 
@@ -225,15 +232,70 @@ func (server *httpServer) triggerAdd(writer http.ResponseWriter, req *http.Reque
 	GenerateHandlerResult(writer, nil, "", true)
 }
 
+func (server *httpServer) podList(writer http.ResponseWriter, req *http.Request) {
+	var namespace string
+	vars := mux.Vars(req)
+	if v, ok := vars["namespace"]; ok {
+		namespace = v
+	}
+	opts := runtimeclient.ListOptions{
+		Namespace: namespace,
+	}
+	podList, err := server.cli.PodList(&opts)
+	if err != nil {
+		GenerateHandlerResult(writer, nil, err.Error(), false)
+		return
+	}
+	var result []string
+	for _, item := range podList.Items {
+		result = append(result, item.Name)
+	}
+	GenerateHandlerResult(writer, nil, result, true)
+}
+
+func (server *httpServer) nodeList(writer http.ResponseWriter, req *http.Request) {
+	var opts runtimeclient.ListOptions
+	nodeList, err := server.cli.NodeList(&opts)
+	if err != nil {
+		GenerateHandlerResult(writer, nil, err.Error(), false)
+		return
+	}
+	var result []string
+	for _, item := range nodeList.Items {
+		result = append(result, item.Name)
+	}
+	GenerateHandlerResult(writer, nil, result, true)
+}
+
+func (server *httpServer) namespaceList(writer http.ResponseWriter, req *http.Request) {
+	var opts runtimeclient.ListOptions
+	namespaceList, err := server.cli.NamespaceList(&opts)
+	if err != nil {
+		GenerateHandlerResult(writer, nil, err.Error(), false)
+		return
+	}
+	var result []string
+	for _, item := range namespaceList.Items {
+		result = append(result, item.Name)
+	}
+	GenerateHandlerResult(writer, nil, result, true)
+}
+
 func (server *httpServer) StartHttpServer() error {
 	router := mux.NewRouter()
 	//health
 	router.HandleFunc(health, server.checkHealth).Methods(http.MethodGet)
 	router.HandleFunc(v1Path(summaryURIPrefix), server.summary).Methods(http.MethodGet)
+	router.HandleFunc(v1Path(checkName), server.checkName).Methods(http.MethodGet)
 
 	//static resource
 	router.HandleFunc(index, server.index).Methods(http.MethodGet)
 	router.PathPrefix(static).HandlerFunc(server.static).Methods(http.MethodGet)
+
+	//inner resource
+	router.HandleFunc(v1Path(nodesURIPrefix), server.nodeList).Methods(http.MethodGet)
+	router.HandleFunc(v1Path(namespaceURIPrefix), server.namespaceList).Methods(http.MethodGet)
+	router.HandleFunc(v1Path(podsURIPrefix), server.podList).Methods(http.MethodGet)
 
 	//operation v1
 	router.HandleFunc(v1Path(operationsURIPrefix), server.operationList).Methods(http.MethodGet)

@@ -50,9 +50,9 @@ type Client interface {
 	TriggerUpdate(trigger *diagApiV1.Trigger, opts ...runtimeClient.UpdateOption) error
 	TriggerDel(trigger *diagApiV1.Trigger, opts ...runtimeClient.DeleteOption) error
 
-	NodeList(opts ...runtimeClient.ListOption) (*diagApiV1.TriggerList, error)
-	NamespaceList(opts ...runtimeClient.ListOption) (*diagApiV1.TriggerList, error)
-	PodList(opts ...runtimeClient.ListOption) (*diagApiV1.TriggerList, error)
+	NodeList(opts ...runtimeClient.ListOption) (*v1.NodeList, error)
+	NamespaceList(opts ...runtimeClient.ListOption) (*v1.NamespaceList, error)
+	PodList(opts ...runtimeClient.ListOption) (*v1.PodList, error)
 }
 
 type client struct {
