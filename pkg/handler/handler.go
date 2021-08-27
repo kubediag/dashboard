@@ -246,9 +246,14 @@ func (server *httpServer) podList(writer http.ResponseWriter, req *http.Request)
 		GenerateHandlerResult(writer, nil, err.Error(), false)
 		return
 	}
-	var result []string
-	for _, item := range podList.Items {
-		result = append(result, item.Name)
+	result := make(map[string][]string)
+	for _, pod := range podList.Items {
+		var containerNames []string
+		containers := pod.Spec.Containers
+		for _, container := range containers {
+			containerNames = append(containerNames, container.Name)
+		}
+		result[pod.Name] = containerNames
 	}
 	GenerateHandlerResult(writer, nil, result, true)
 }
@@ -310,7 +315,7 @@ func (server *httpServer) StartHttpServer() error {
 
 	//diagnosis v1
 	router.HandleFunc(v1Path(diagnosesURIPrefix), server.diagnosisList).Methods(http.MethodGet)
-	router.HandleFunc(v1Path(diagnosesURIPrefix), server.diagnosisAdd).Methods(http.MethodPost)
+	router.HandleFunc(v1Path(diagnosisURIPrefix), server.diagnosisAdd).Methods(http.MethodPost)
 
 	return http.ListenAndServe(server.host+":"+server.port, router)
 }

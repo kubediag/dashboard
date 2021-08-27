@@ -141,14 +141,14 @@ func NewDiagnosisVO(diagnosis *diagApiV1.Diagnosis) *DiagnosisVO {
 	var vo DiagnosisVO
 	vo.Name = diagnosis.Name
 	spec := &diagnosis.Spec
-	if spec.NodeName != "" {
-		vo.Target = nodePrefix + spec.NodeName
-	} else if spec.PodReference != nil {
+	if spec.PodReference != nil {
 		refer := spec.PodReference
 		vo.Target = podPrefix + refer.NamespacedName.Namespace + "/" + refer.NamespacedName.Name
 		if refer.Container != "" {
 			vo.Target = vo.Target + "/" + refer.Container
 		}
+	} else if spec.NodeName != "" {
+		vo.Target = nodePrefix + spec.NodeName
 	}
 	status := &diagnosis.Status
 	vo.StartTime = status.StartTime.Time
