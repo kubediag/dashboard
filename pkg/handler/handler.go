@@ -110,9 +110,21 @@ func (server *httpServer) summary(writer http.ResponseWriter, req *http.Request)
 		GenerateHandlerResult(writer, nil, err, false)
 		return
 	}
+	diagnosisList, err := server.cli.DiagnosisList(opts)
+	if err != nil {
+		GenerateHandlerResult(writer, nil, err, false)
+		return
+	}
+	triggerList, err := server.cli.TriggerList(opts)
+	if err != nil {
+		GenerateHandlerResult(writer, nil, err, false)
+		return
+	}
 	resourceCount := make(map[string]int)
 	resourceCount["operation"] = len(operationList.Items)
 	resourceCount["operationSet"] = len(operationSetList.Items)
+	resourceCount["diagnosis"] = len(diagnosisList.Items)
+	resourceCount["trigger"] = len(triggerList.Items)
 	summaryVO := &SummaryVO{
 		ResourceCount: resourceCount,
 	}
