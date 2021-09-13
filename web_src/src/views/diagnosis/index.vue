@@ -71,6 +71,7 @@
               message: '请输入诊断名称',
               trigger: 'blur',
             },
+            {validator: validatePass, trigger: 'blur'}
           ]"
         >
           <!-- {
@@ -103,6 +104,7 @@
 import { operationSets } from '@/api/diagnosis.js'
 import { operations } from '@/api/operation.js'
 import edit from '../operation/edit.vue'
+import {checkName} from "@/api/diagnoseslist"
 export default {
   components: { edit },
   props: {},
@@ -203,6 +205,27 @@ export default {
     localStorage.removeItem('viewDeta') // 删除
   },
   methods: {
+    async checkName (name, kind) {
+      const params = {name, kind}
+      const data = await checkName(params)
+      console.log(data)
+      if (!data.success) {
+        return data.message
+      }
+    },
+    async validatePass (rule, value, callback) {
+      if (value === '') {
+        callback(new Error('请输入'))
+      } else {
+        if (value !== '') {
+          const message = await this.checkName(value, 'Operation')
+          if (message) {
+            callback(new Error(message))
+          }
+        }
+        callback()
+      }
+    },
     operationsFn() {
       operations({})
         .then((res) => {

@@ -23,33 +23,26 @@
         fontWeight: '900',
       }"
     >
-      <el-table-column type="index" label="序号" width="60" />
-      <el-table-column prop="name" label="操作名称" show-overflow-tooltip>
-        <template slot-scope="scope">
-          <el-button type="text" size="small" @click="editData(scope.row)">{{
-            scope.row.name
-          }}</el-button>
-        </template>
-      </el-table-column>
-      <el-table-column prop="version" label="版本号" show-overflow-tooltip />
-      <el-table-column prop="desc" label="描述" show-overflow-tooltip />
-      <el-table-column prop="maintainer" label="维护者" show-overflow-tooltip />
+      <el-table-column prop="name" label="操作名称" show-overflow-tooltip />
+      <el-table-column prop="version" label="版本号" show-overflow-tooltip/>
+      <el-table-column prop="desc" label="描述" show-overflow-tooltip/>
+<!--      <el-table-column prop="maintainer" label="维护者" show-overflow-tooltip/>-->
       <el-table-column
         prop="time"
         label="更新时间"
         :formatter="formatter"
         show-overflow-tooltip
       />
-      <!-- <el-table-column label="操作" width="120">
+      <el-table-column label="操作" width="120">
         <template slot-scope="scope">
-          <el-button type="text" size="small" @click="editData(scope.row)"
-            >编辑</el-button
-          >
-          <el-button type="text" size="small" @click="delData(scope.row)"
-            >删除</el-button
-          >
+          <el-button
+            type="text"
+            size="small"
+            @click="editData(scope.row)"
+          >查看详情
+          </el-button>
         </template>
-      </el-table-column> -->
+      </el-table-column>
     </el-table>
 
     <div style="text-align: right; margin: 20px 0">
@@ -62,19 +55,20 @@
         @handleSizeChange="handleSizeChange"
       />
     </div>
-    <edit ref="edit" />
+    <edit ref="edit"/>
   </div>
 </template>
 
 <script>
-import { operations } from '@/api/operation.js'
+import {operations} from '@/api/operation.js'
 import edit from './edit.vue'
 import pagination from './pagination.vue'
-import { parseTime } from '@/utils'
+import {parseTime} from '@/utils'
+
 export default {
-  components: { edit, pagination },
+  components: {edit, pagination},
   props: {},
-  data() {
+  data () {
     return {
       activeName: 'all',
       diagnosisName: '',
@@ -89,12 +83,13 @@ export default {
       }
     }
   },
-  created() {},
-  mounted() {
+  created () {
+  },
+  mounted () {
     this.operationsFn()
   },
   methods: {
-    operationsFn() {
+    operationsFn () {
       this.isLoading = true
       operations({})
         .then((res) => {
@@ -104,7 +99,7 @@ export default {
             this.pagination.total = res.data.length
             // 进入if 因为他有多页码 else 只有1页
             if (res.data.length >= this.pagination.pageSize) {
-              for (let i = 0; i < this.pagination.pageSize; i++) {
+              for (let i = 0 ; i < this.pagination.pageSize ; i++) {
                 this.tableView.push(res.data[i])
               }
             } else {
@@ -119,26 +114,26 @@ export default {
           this.isLoading = false
         })
     },
-    operationsFn2() {
+    operationsFn2 () {
       this.tableView = []
       this.pagination.total = this.operationsData2.length
       // 进入if 因为他有多页码 else 只有1页
       if (this.operationsData2.length >= this.pagination.pageSize) {
-        for (let i = 0; i < this.pagination.pageSize; i++) {
+        for (let i = 0 ; i < this.pagination.pageSize ; i++) {
           this.tableView.push(this.operationsData2[i])
         }
       } else {
         this.tableView = this.operationsData2
       }
     },
-    diagnosisNameSearch() {
+    diagnosisNameSearch () {
       this.operationsData2 = this.operationsData.filter(item => item.name.indexOf(this.diagnosisName) !== -1)
       this.operationsFn2()
     },
-    editData(row) {
+    editData (row) {
       this.$refs.edit.openDrawer(row)
     },
-    delData(row) {
+    delData (row) {
       this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -157,18 +152,18 @@ export default {
           })
         })
     },
-    handleSizeChange(val) {
+    handleSizeChange (val) {
       this.pagination.pageSize = val
       this.operationsFn2()
     },
-    handleCurrentChange(val) {
+    handleCurrentChange (val) {
       this.pagination.currentPage = val
     },
-    formatter(row) {
+    formatter (row) {
       return parseTime(row.time || '', '{y}-{m}-{d} {h}:{i}:{s}')
     },
     // 用户点击页码组件返回的数据
-    tables(table) {
+    tables (table) {
       this.tableView = table
     }
   }

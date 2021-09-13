@@ -10,7 +10,7 @@
       <el-dropdown-item :disabled="language==='en'" command="en">
         English
       </el-dropdown-item>
-      <el-dropdown-item :disabled="language==='es'" command="es" v-show="false">
+      <el-dropdown-item v-show="false" :disabled="language==='es'" command="es">
         Español
       </el-dropdown-item>
     </el-dropdown-menu>
@@ -26,7 +26,7 @@ export default {
   },
   methods: {
     handleSetLanguage(lang) {
-      let messageTxt =  lang === "zh"?'切换语言成功':'Switch Language Success'
+      const messageTxt = lang === 'zh' ? '切换语言成功' : 'Switch Language Success'
       this.$i18n.locale = lang
       this.$store.dispatch('app/setLanguage', lang)
       this.$message({

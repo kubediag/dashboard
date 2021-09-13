@@ -16,7 +16,7 @@ test: fmt vet
 
 # Build main binary
 main: fmt vet
-	go build -o bin/main main.go
+	go build -o main main.go
 
 # Run against the configured Kubernetes cluster in ~/.kube/config
 run: fmt vet

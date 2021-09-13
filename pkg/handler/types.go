@@ -68,7 +68,7 @@ type DiagnosisVO struct {
 	Target     string               `json:"target,omitempty"`
 	Maintainer string               `json:"maintainer,omitempty"`
 	Phase      string               `json:"phase,omitempty"`
-	StartTime  time.Time            `json:"startTime,omitempty"`
+	StartTime  *time.Time           `json:"startTime,omitempty"`
 	Result     map[string]string    `json:"result,omitempty"`
 	Detail     *diagApiV1.Diagnosis `json:"detail,omitempty"`
 }
@@ -151,7 +151,9 @@ func NewDiagnosisVO(diagnosis *diagApiV1.Diagnosis) *DiagnosisVO {
 		vo.Target = nodePrefix + spec.NodeName
 	}
 	status := &diagnosis.Status
-	vo.StartTime = status.StartTime.Time
+	if !status.StartTime.Time.IsZero() {
+		vo.StartTime = &status.StartTime.Time
+	}
 	vo.Result = status.OperationResults
 	vo.Phase = string(status.Phase)
 	vo.Detail = diagnosis

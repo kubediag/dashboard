@@ -1,14 +1,14 @@
 <template>
   <div>
     <el-drawer
-      title="操作详情"
+      title="详情"
       :visible.sync="drawer"
       :before-close="handleClose"
       :size="800"
     >
       <div slot="title">
         <el-tabs v-model="activeName" @tab-click="tabsClick">
-          <el-tab-pane label="操作详情" name="details" />
+          <el-tab-pane label="详情" name="details" />
           <el-tab-pane label="YAML" name="YAML" />
         </el-tabs>
       </div>
@@ -81,6 +81,10 @@
 </template>
 
 <script>
+import jsyaml from 'js-yaml'
+import hljs from 'highlight.js'
+import 'highlight.js/styles/default.css'
+
 export default {
   components: {},
   props: {},
@@ -173,7 +177,7 @@ export default {
       console.log(val.name, document.getElementById('updateDAGData'), 'val')
       if (val.name === 'YAML') {
         document.getElementById('updateDAGData').innerHTML =
-          this.syntaxHighlight(this.form.detail)
+          hljs.highlight('yaml', jsyaml.dump(this.form.detail)).value
       }
     },
     closeDrawer() {

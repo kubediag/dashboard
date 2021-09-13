@@ -202,6 +202,22 @@ code {
 .multiselect--active {
   z-index: 1000 !important;
 }
+
 .el-cascader-menu__wrap {
   height: 368px;
+}
+
+.el-form-item__error {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+  white-space: nowrap;
+}
+
+.hljs-string {
+  color: #00fd8b !important;
+}
+
+.hljs-number {
+  color: #d978ef !important;
 }

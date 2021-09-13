@@ -49,6 +49,7 @@ service.interceptors.response.use(
         type: 'error',
         duration: 5 * 1000
       })
+      return res
     }
 
     // if (res.code !== 200) {
