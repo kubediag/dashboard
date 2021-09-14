@@ -88,4 +88,15 @@ rules:
   verbs:
   - get
   - patch
+  - list
   - update
+
+- apiGroups:
+  - ""
+  resources:
+  - pods
+  - nodes
+  - namespaces
+  verbs:
+  - get
+  - list

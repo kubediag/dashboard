@@ -2,7 +2,7 @@
   <div class="app-container">
     <div style="text-align: center; margin: 50px 0">
       <h1>基于 Kubernetes 打造的诊断运维编排框架</h1>
-      <router-link to="/diagnosis/index" style="vertical-align: middle">
+      <router-link to="/arrangeList/diagnosis" style="vertical-align: middle">
         <el-button
           type="primary"
           round
@@ -58,8 +58,10 @@
         <div style="margin: 40px">
           <h2>资源数量：</h2>
           <div style="padding: 1px 30px">
-            <p>编排管理：{{ summaryData.operationSet }}</p>
-            <p>操作管理：{{ summaryData.operation }}</p>
+            <p>诊断任务：{{ summaryData.diagnosis }}</p>
+            <p>诊断触发器：{{ summaryData.trigger }}</p>
+            <p>操作流水线：{{ summaryData.operationSet }}</p>
+            <p>诊断操作：{{ summaryData.operation }}</p>
           </div>
         </div>
       </div>

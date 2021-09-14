@@ -1,7 +1,7 @@
 <template>
   <div class="exception">
     <!-- <img :src="require('@/assets/img/404.jpg')"/> -->
-    <img src="@/assets/404_images/404.jpg" alt="404" />
+    <img src="@/assets/404_images/404.jpg" alt="404">
     <div class="content">
       <h1 class="title">{{ $t("route.page404") }}</h1>
       <div class="desc">{{ $t("route.desc404") }}</div>

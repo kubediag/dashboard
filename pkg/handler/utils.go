@@ -29,7 +29,7 @@ const (
 )
 
 type Result struct {
-	Success bool        `json:"success,omitempty"`
+	Success bool        `json:"success"`
 	Data    interface{} `json:"data,omitempty"`
 	Message interface{} `json:"message,omitempty"`
 }

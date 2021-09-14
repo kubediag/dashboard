@@ -16,13 +16,13 @@ import Layout from '@/layout'
  **/
 
 /**
-* hidden: true                   if `hidden:true` will not show in the sidebar(default is false)
-* alwaysShow: true               if set true, will always show the root menu, whatever its child routes length
-*                                if not set alwaysShow, only more than one route under the children
-*                                it will becomes nested mode, otherwise not show the root menu
-* redirect: noredirect           if `redirect:noredirect` will no redirect in the breadcrumb
-* name:'router-name'             the name is used by <keep-alive> (must set!!!)
-* meta : {
+ * hidden: true                   if `hidden:true` will not show in the sidebar(default is false)
+ * alwaysShow: true               if set true, will always show the root menu, whatever its child routes length
+ *                                if not set alwaysShow, only more than one route under the children
+ *                                it will becomes nested mode, otherwise not show the root menu
+ * redirect: noredirect           if `redirect:noredirect` will no redirect in the breadcrumb
+ * name:'router-name'             the name is used by <keep-alive> (must set!!!)
+ * meta : {
     roles: ['admin','editor']    will control the page roles (you can set multiple roles)
     title: 'title'               the name show in sub-menu and breadcrumb (recommend set)
     icon: 'svg-name'             the icon show in the sidebar
@@ -30,7 +30,7 @@ import Layout from '@/layout'
     breadcrumb: false            if false, the item will hidden in breadcrumb(default is true)
     affix: true                  if true, the tag will affix in the tags-view
   }
-**/
+ **/
 
 /**
  * constantRoutes
@@ -52,17 +52,40 @@ const oAsyncRoutes = [
   //   ]
   // },
   {
-    path: '/diagnosis',
+    path: '/diagnosislist',
     component: Layout,
     children: [
       {
         path: 'index',
-        component: () => import('@/views/diagnosis/index'),
-        name: 'diagnosis',
-        meta: { title: '诊断编排', icon: 'layout', affix: true }
+        component: () => import('@/views/diagnosislist/index'),
+        name: 'diagnosislist',
+        meta: { title: '诊断任务', icon: 'diagnosis', affix: true }
+      }
+    ]
+  }, {
+    path: '/triggertask',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/triggertask/index'),
+        name: 'triggertask',
+        meta: { title: '诊断触发器', icon: 'trigger', affix: true }
       }
     ]
   },
+  // {
+  //   path: '/diagnosis',
+  //   component: Layout,
+  //   children: [
+  //     {
+  //       path: 'index',
+  //       component: () => import('@/views/diagnosis/index'),
+  //       name: 'diagnosis',
+  //       meta: {title: '诊断编排', icon: 'layout', affix: true}
+  //     }
+  //   ]
+  // },
   {
     path: '/arrangeList',
     component: Layout,
@@ -71,7 +94,14 @@ const oAsyncRoutes = [
         path: 'index',
         component: () => import('@/views/arrangeList/index'),
         name: 'arrangeList',
-        meta: { title: '编排管理', icon: 'arrange', affix: true }
+        meta: { title: '操作流水线', icon: 'operationset', affix: true }
+      },
+      {
+        path: 'diagnosis',
+        component: () => import('@/views/diagnosis/index'),
+        name: 'diagnosis',
+        meta: { title: '诊断编排', icon: 'layout', affix: true },
+        hidden: true
       }
     ]
   },
@@ -83,7 +113,7 @@ const oAsyncRoutes = [
         path: 'index',
         component: () => import('@/views/operation/index'),
         name: 'operation',
-        meta: { title: '操作管理', icon: 'operation', affix: true }
+        meta: { title: '诊断操作', icon: 'operation', affix: true }
       }
     ]
   },
@@ -174,7 +204,7 @@ export const constantRoutes = [
 /**
  * asyncRoutes
  * the routes that need to be dynamically loaded based on user roles
-*/
+ */
 export const asyncRoutes = [
   // ...oAsyncRoutes
 ]

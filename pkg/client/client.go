@@ -20,6 +20,7 @@ import (
 	"context"
 
 	diagApiV1 "github.com/kubediag/kubediag/api/v1"
+	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	innerScheme "k8s.io/client-go/kubernetes/scheme"
 	"k8s.io/client-go/tools/clientcmd"
@@ -33,18 +34,25 @@ type Client interface {
 	OperationAdd(operation *diagApiV1.Operation, opts ...runtimeClient.CreateOption) error
 	OperationUpdate(operation *diagApiV1.Operation, opts ...runtimeClient.UpdateOption) error
 	OperationDel(operation *diagApiV1.Operation, opts ...runtimeClient.DeleteOption) error
+
 	OperationSetList(opts ...runtimeClient.ListOption) (*diagApiV1.OperationSetList, error)
 	OperationSetAdd(operationSet *diagApiV1.OperationSet, opts ...runtimeClient.CreateOption) error
 	OperationSetUpdate(operationSet *diagApiV1.OperationSet, opts ...runtimeClient.UpdateOption) error
 	OperationSetDel(operationSet *diagApiV1.OperationSet, opts ...runtimeClient.DeleteOption) error
+
 	DiagnosisList(opts ...runtimeClient.ListOption) (*diagApiV1.DiagnosisList, error)
 	DiagnosisAdd(diagnosis *diagApiV1.Diagnosis, opts ...runtimeClient.CreateOption) error
 	DiagnosisUpdate(diagnosis *diagApiV1.Diagnosis, opts ...runtimeClient.UpdateOption) error
 	DiagnosisDel(diagnosis *diagApiV1.Diagnosis, opts ...runtimeClient.DeleteOption) error
+
 	TriggerList(opts ...runtimeClient.ListOption) (*diagApiV1.TriggerList, error)
 	TriggerAdd(trigger *diagApiV1.Trigger, opts ...runtimeClient.CreateOption) error
 	TriggerUpdate(trigger *diagApiV1.Trigger, opts ...runtimeClient.UpdateOption) error
 	TriggerDel(trigger *diagApiV1.Trigger, opts ...runtimeClient.DeleteOption) error
+
+	NodeList(opts ...runtimeClient.ListOption) (*v1.NodeList, error)
+	NamespaceList(opts ...runtimeClient.ListOption) (*v1.NamespaceList, error)
+	PodList(opts ...runtimeClient.ListOption) (*v1.PodList, error)
 }
 
 type client struct {
@@ -119,7 +127,6 @@ func (cli *client) TriggerList(opts ...runtimeClient.ListOption) (*diagApiV1.Tri
 		return nil, err
 	}
 	return &triggerList, nil
-
 }
 
 func (cli *client) TriggerAdd(trigger *diagApiV1.Trigger, opts ...runtimeClient.CreateOption) error {
@@ -133,6 +140,30 @@ func (cli *client) TriggerUpdate(trigger *diagApiV1.Trigger, opts ...runtimeClie
 
 func (cli *client) TriggerDel(trigger *diagApiV1.Trigger, opts ...runtimeClient.DeleteOption) error {
 	return cli.Delete(context.Background(), trigger, opts...)
+}
+
+func (cli *client) NodeList(opts ...runtimeClient.ListOption) (*v1.NodeList, error) {
+	var nodeList v1.NodeList
+	if err := cli.List(context.Background(), &nodeList, opts...); err != nil {
+		return nil, err
+	}
+	return &nodeList, nil
+}
+
+func (cli *client) PodList(opts ...runtimeClient.ListOption) (*v1.PodList, error) {
+	var podList v1.PodList
+	if err := cli.List(context.Background(), &podList, opts...); err != nil {
+		return nil, err
+	}
+	return &podList, nil
+}
+
+func (cli *client) NamespaceList(opts ...runtimeClient.ListOption) (*v1.NamespaceList, error) {
+	var namespaceList v1.NamespaceList
+	if err := cli.List(context.Background(), &namespaceList, opts...); err != nil {
+		return nil, err
+	}
+	return &namespaceList, nil
 }
 
 func NewClient(kubeconfig string) (Client, error) {
