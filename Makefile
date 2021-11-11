@@ -1,5 +1,7 @@
 # Image URL to use all building/pushing image targets
-IMG ?= kubediag-dashboard:latest
+IMG ?= hub.c.163.com/kubediag/kubediag-dashboard
+# Image tag to use all building/pushing image targets
+TAG ?= $(shell git rev-parse --short HEAD)
 
 # Get the currently used golang install path (in GOPATH/bin, unless GOBIN is set)
 ifeq (,$(shell go env GOBIN))
@@ -16,17 +18,21 @@ test: fmt vet
 
 # Build main binary
 main: fmt vet
-	go build -o main main.go
+	go build -o bin/main main.go
 
 # Run against the configured Kubernetes cluster in ~/.kube/config
 run: fmt vet
 	go run ./main.go
 
-
 # Deploy controller in the configured Kubernetes cluster in ~/.kube/config
 deploy: 
-	cd config/main && kustomize edit set image kubediag-dashboard=${IMG}
+	cd config/main && kustomize edit set image kubediag-dashboard=${IMG}:${TAG}
 	kustomize build config/default | kubectl apply -f -
+
+# Generate manifests e.g. CRD, RBAC etc.
+manifests:
+	cd config/main && kustomize edit set image kubediag-dashboard=${IMG}:${TAG}
+	kustomize build config/default > config/deploy/manifests.yaml
 
 # Run go fmt against code
 fmt:

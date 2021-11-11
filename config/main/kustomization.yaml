@@ -4,5 +4,5 @@ resources:
 - main.yaml
 images:
 - name: kubediag-dashboard
-  newName: kubediag-dashboard
-  newTag: latest
+  newName: hub.c.163.com/kubediag/kubediag-dashboard
+  newTag: v0.1.0

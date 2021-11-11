@@ -20,11 +20,11 @@ spec:
         name: dashboard
         resources:
           limits:
-            cpu: 500m
-            memory: 500Mi
+            cpu: 800m
+            memory: 200Mi
           requests:
-            cpu: 500m
-            memory: 500Mi
+            cpu: 200m
+            memory: 50Mi
       terminationGracePeriodSeconds: 10
       serviceAccountName: kubediag-dashboard
 
@@ -35,12 +35,14 @@ metadata:
   name: kubediag-dashboard
   namespace: kubediag
 spec:
+  type: NodePort
   selector:
       app: kubediag-dashboard
   ports:
     - protocol: TCP
       port: 80
       targetPort: 8080
+      nodePort: 30055
 
 ---
 apiVersion: v1
