@@ -44,8 +44,8 @@ vet:
 
 # Build the docker image
 docker-build: test
-	docker build . -t ${IMG}
+	docker build . -t ${IMG}:${TAG}
 
 # Push the docker image
 docker-push:
-	docker push ${IMG}
+	docker push ${IMG}:${TAG}
