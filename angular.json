@@ -20,18 +20,18 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/dashboard",
-            "index": "src/index.html",
-            "main": "src/main.ts",
-            "polyfills": "src/polyfills.ts",
+            "outputPath": "dist/frontend",
+            "index": "src/app/frontend/index.html",
+            "main": "src/app/frontend/main.ts",
+            "polyfills": "src/app/frontend/polyfills.ts",
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "assets": [
-              "src/favicon.ico",
-              "src/assets"
+              "src/app/frontend/favicon.ico",
+              "src/app/frontend/assets"
             ],
             "styles": [
-              "src/styles.scss"
+              "src/app/frontend/styles.scss"
             ],
             "scripts": []
           },
@@ -51,8 +51,8 @@
               ],
               "fileReplacements": [
                 {
-                  "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.prod.ts"
+                  "replace": "src/app/frontend/environments/environment.ts",
+                  "with": "src/app/frontend/environments/environment.prod.ts"
                 }
               ],
               "outputHashing": "all"
@@ -89,17 +89,17 @@
         "test": {
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
-            "main": "src/test.ts",
-            "polyfills": "src/polyfills.ts",
+            "main": "src/app/frontend/test.ts",
+            "polyfills": "src/app/frontend/polyfills.ts",
             "tsConfig": "tsconfig.spec.json",
             "karmaConfig": "karma.conf.js",
             "inlineStyleLanguage": "scss",
             "assets": [
-              "src/favicon.ico",
-              "src/assets"
+              "src/app/frontend/favicon.ico",
+              "src/app/frontend/assets"
             ],
             "styles": [
-              "src/styles.scss"
+              "src/app/frontend/styles.scss"
             ],
             "scripts": []
           }
