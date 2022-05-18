@@ -30,9 +30,7 @@
               "src/app/frontend/favicon.ico",
               "src/app/frontend/assets"
             ],
-            "styles": [
-              "src/app/frontend/styles.scss"
-            ],
+            "styles": ["src/app/frontend/styles.scss"],
             "scripts": []
           },
           "configurations": {
@@ -98,14 +96,21 @@
               "src/app/frontend/favicon.ico",
               "src/app/frontend/assets"
             ],
-            "styles": [
-              "src/app/frontend/styles.scss"
-            ],
+            "styles": ["src/app/frontend/styles.scss"],
             "scripts": []
+          }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": ["src/**/*.ts", "src/**/*.html"]
           }
         }
       }
     }
   },
-  "defaultProject": "dashboard"
+  "defaultProject": "dashboard",
+  "cli": {
+    "defaultCollection": "@angular-eslint/schematics"
+  }
 }
