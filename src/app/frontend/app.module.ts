@@ -1,3 +1,5 @@
+import { ErrorDialogComponent } from './error-dialog/error-dialog.component';
+import { httpInterceptorProviders } from './http-interceptors/index';
 import { MatButtonModule } from '@angular/material/button';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
@@ -11,9 +13,11 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
+import { MatDialogModule } from '@angular/material/dialog';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
-  declarations: [AppComponent, LayoutComponent],
+  declarations: [AppComponent, LayoutComponent, ErrorDialogComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,
@@ -24,8 +28,10 @@ import { MatListModule } from '@angular/material/list';
     MatIconModule,
     MatListModule,
     MatButtonModule,
+    MatDialogModule,
+    HttpClientModule,
   ],
-  providers: [],
+  providers: [httpInterceptorProviders],
   bootstrap: [AppComponent],
 })
 export class AppModule {}
