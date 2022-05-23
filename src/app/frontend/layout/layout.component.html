@@ -1,34 +1,68 @@
 <mat-sidenav-container class="sidenav-container">
-  <mat-sidenav #drawer class="sidenav" fixedInViewport
-      [attr.role]="(isHandset$ | async) ? 'dialog' : 'navigation'"
-      [mode]="(isHandset$ | async) ? 'over' : 'side'"
-      [opened]="(isHandset$ | async) === false">
+  <mat-sidenav #drawer class="sidenav" fixedInViewport [attr.role]="(isHandset$ | async) ? 'dialog' : 'navigation'"
+    [mode]="(isHandset$ | async) ? 'over' : 'side'" [opened]="(isHandset$ | async) === false">
     <mat-toolbar>
       <div class="logo">
-          <div class="logo-img">
-          </div>
-          Kubediag
+        <img class="logo-img" src="assets/img/kubediag-logo.png">
       </div>
     </mat-toolbar>
-    <mat-nav-list>
-      <a mat-list-item href="#">Link 1</a>
-      <a mat-list-item href="#">Link 2</a>
-      <a mat-list-item href="#">Link 3</a>
-    </mat-nav-list>
+    <div class="nav">
+      <div class="nav-item">
+        <a routerLink="/diagnosis" routerLinkActive="active">
+          <div>
+            <img src="assets/img/menu-diagnosis.svg">
+            Diagnosis
+          </div>
+
+        </a>
+      </div>
+      <div class="nav-item">
+        <a routerLink="/operation" routerLinkActive="active">
+          <div>
+            <img src="assets/img/menu-operation.svg">
+            Operation
+          </div>
+
+        </a>
+      </div>
+      <div class="nav-item">
+        <a routerLink="/operationSet" routerLinkActive="active">
+          <div>
+            <img src="assets/img/menu-operationSet.svg">
+            OperationSet
+          </div>
+        </a>
+      </div>
+      <div class="nav-item">
+        <a routerLink="/trigger" routerLinkActive="active">
+          <div>
+            <img src="assets/img/menu-trigger.svg">
+            Trigger
+          </div>
+        </a>
+      </div>
+    </div>
   </mat-sidenav>
   <mat-sidenav-content>
-    <mat-toolbar color="primary">
-      <button
-        type="button"
-        aria-label="Toggle sidenav"
-        mat-icon-button
-        (click)="drawer.toggle()"
+    <mat-toolbar class="header-nav">
+      <button type="button" aria-label="Toggle sidenav" mat-icon-button (click)="drawer.toggle()"
         *ngIf="isHandset$ | async">
         <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
       </button>
-      <span>Kubediag</span>
+      <div class="header">
+        <!-- <span>Kubediag</span> -->
+        <a href="https://kubediag.org/" class="img-book" target="_blank">
+          <img src="assets/img/book.png">
+        </a>
+        <a href="https://github.com/kubediag/kubediag" class="img-github" target="_blank">
+          <img src="assets/img/github.png">
+        </a>
+      </div>
+
     </mat-toolbar>
     <!-- Add Content Here -->
-    <router-outlet></router-outlet>
+    <div class="contain">
+      <router-outlet></router-outlet>
+    </div>
   </mat-sidenav-content>
 </mat-sidenav-container>

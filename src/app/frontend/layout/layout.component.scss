@@ -3,11 +3,16 @@
 }
 
 .sidenav {
-  width: 260px;
+  width: 256px;
+  box-shadow: 0 16px 38px -12px rgb(0 0 0 / 56%), 0 4px 25px 0px rgb(0 0 0 / 12%), 0 8px 10px -5px rgb(0 0 0 / 20%);
 }
 
 .sidenav .mat-toolbar {
   background: inherit;
+}
+.header-nav {
+  background-color: #fff;
+  border-bottom: 1px solid #eee;
 }
 
 .mat-toolbar.mat-primary {
@@ -15,6 +20,95 @@
   top: 0;
   z-index: 1;
 }
-.active {
-  background-color: #f44336;
+
+.logo {
+  width: 100%;
+  font-size: 24px;
+  color: #3c4858;
+  white-space: nowrap;
+  font-weight: 600;
+  line-height: 30px;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  position: relative;
+  padding: 10px 0;
 }
+.logo::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  right: 15px;
+  height: 1px;
+  width: calc(100% - 30px);
+  background-color: rgb(16 22 26 / 30%);
+}
+.logo-img {
+  height: 50px;
+  margin: 0 16px;
+}
+
+.header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  padding-left: 15px;
+
+  span {
+    font-size: 18px;
+  }
+  .img-book {
+    margin-left: auto;
+    img {
+      width: 21px;
+    }
+  }
+  .img-github {
+    margin: 0 40px 0 24px;
+    img {
+      width: 24px;
+    }
+  }
+}
+
+.contain {
+  min-height: calc(100% - 124px);
+  margin: 30px;
+  border-radius: 2px;
+}
+
+.nav {
+  margin-top: 20px;
+  width: 100%;
+  .nav-item {
+    a {
+      display: block;
+      border-radius: 3px;
+      color: #3c4858;
+      font-size: 14px;
+      padding: 10px 15px;
+      transition: all 150ms ease-in;
+      margin: 10px 15px 0;
+      div {
+        display: flex;
+        align-items: center;
+        height: 30px;
+        img {
+          width: 20px;
+          margin: 0 15px 0 10px;
+        }
+      }
+    }
+    &:hover > a {
+      background-color: rgba(200, 200, 200, 0.2);
+      color: #3c4858;
+      box-shadow: none;
+    }
+    .active {
+      color: #fff !important;
+      background-color: #f44336 !important;
+      box-shadow: 0 4px 20px 0px rgb(0 0 0 / 14%), 0 7px 10px -5px rgb(244 67 54 / 40%);
+    }
+  }
+}
+
