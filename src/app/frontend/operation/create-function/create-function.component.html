@@ -1,0 +1,103 @@
+<mat-card class="shipping-card">
+  <div class="title">
+    Create Operation (Function)
+  </div>
+  <mat-tab-group dynamicHeight>
+    <mat-tab label="Form">
+      <form [formGroup]="addressForm" novalidate (ngSubmit)="onSubmit()">
+        <div class="tab-content">
+          <div class="codeSource-title">
+            CodeSource
+          </div>
+          <div class="row">
+            <mat-form-field class="codeSource-value">
+              <div formArrayName="codeSource">
+                <div class="codeSource">
+                  <div class="codeSource-key">
+                    <div *ngFor="let code of codeSource.value, let i = index" (click)="changeCurrentCodeSourceIndex(i)"
+                      [ngClass]="{selectKey: currentCodeSourceIndex === i}">
+                      {{code.key}}</div>
+                  </div>
+                  <div class="codeSource-value">
+                    <div [formGroupName]="currentCodeSourceIndex">
+                      <textarea matInput
+                        [formControl]="$any(codeSource?.get('' + currentCodeSourceIndex)?.get('value'))"
+                        class="function-textarea"></textarea>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </mat-form-field>
+          </div>
+          <div class="row">
+            <div class="col">
+              <mat-form-field class="full-width">
+                <input matInput placeholder="Name" formControlName="name" [readonly]="isEdit">
+                <mat-error *ngIf="addressForm.controls['name'].hasError('required')">
+                  Name is <strong>required</strong>
+                </mat-error>
+              </mat-form-field>
+            </div>
+            <div class="col input-desc">
+              Name of created Operation(Function).
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <mat-form-field class="full-width">
+                <input matInput type="number" placeholder="TimeoutSeconds" formControlName="timeoutSeconds">
+                <mat-error *ngIf="addressForm.controls['timeoutSeconds'].hasError('required')">
+                  TimeoutSeconds is <strong>required</strong>
+                </mat-error>
+              </mat-form-field>
+            </div>
+            <div class="col input-desc">
+              Number of seconds after which the processor times out. Defaults to 30 seconds. Minimum value is 1.
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col">
+              <mat-form-field class="full-width">
+                <mat-select placeholder="Runtime" formControlName="runtime">
+                  <mat-option *ngFor="let runtime of runtimeList" [value]="runtime">
+                    {{ runtime }}
+                  </mat-option>
+                </mat-select>
+                <mat-error *ngIf="addressForm.controls['runtime'].hasError('required')">
+                  Runtime is <strong>required</strong>
+                </mat-error>
+              </mat-form-field>
+            </div>
+            <div class="col input-desc">
+              The language to use for writing a function.
+            </div>
+          </div>
+
+          <mat-card-actions align="end">
+            <button mat-raised-button color="primary" type="submit">Submit</button>
+            <a mat-button (click)="cancel()">Cancel</a>
+          </mat-card-actions>
+        </div>
+      </form>
+    </mat-tab>
+    <mat-tab label="Yaml">
+      <form [formGroup]="yamlForm" (ngSubmit)="submitByYaml()">
+        <div class="tab-content">
+          <div class="row">
+            <div class="col">
+              <mat-form-field class="full-width">
+                <textarea matInput formControlName="yaml" class="textarea"></textarea>
+              </mat-form-field>
+            </div>
+          </div>
+        </div>
+        <mat-card-actions align="end">
+          <button mat-raised-button color="primary" type="submit">Submit</button>
+          <a mat-button (click)="cancel()">Cancel</a>
+        </mat-card-actions>
+      </form>
+
+    </mat-tab>
+  </mat-tab-group>
+</mat-card>

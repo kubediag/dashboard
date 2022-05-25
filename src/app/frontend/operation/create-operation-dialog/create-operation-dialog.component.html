@@ -1,0 +1,19 @@
+<h2 mat-dialog-title style="font-weight: 600;">Create Operation </h2>
+<mat-dialog-content class="mat-typography">
+  <div class="text">Please Select one of the following operation processor type.</div>
+  <div matRipple class="item" mat-dialog-close="createHttpServer">
+    <div class="type">HTTPServer</div>
+    <div class="desc">Specifies the http server to do operations.</div>
+  </div>
+  <div matRipple class="item" mat-dialog-close="createScriptRunner">
+    <div class="type">ScriptRunner</div>
+    <div class="desc">Contains the information to run a script.</div>
+  </div>
+  <div matRipple class="item" mat-dialog-close="createFunction">
+    <div class="type">Function</div>
+    <div class="desc">Contains the details to run a function as an operation.</div>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close cdkFocusInitial color="primary">Cancel</button>
+</mat-dialog-actions>

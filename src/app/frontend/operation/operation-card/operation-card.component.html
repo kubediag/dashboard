@@ -1,0 +1,33 @@
+<mat-card class="operation-card">
+  <div class="operation-card-header">
+    <div class="operation-card-header-icon" [class]="item.type"></div>
+    <div class="operation-card-header-info">
+      <div class="info-name">
+        {{item.name}}
+        <div class="operation-card-header-type">{{item.type}}</div>
+
+      </div>
+      <div class="info-item" *ngIf="item.type === 'HTTPServer'">
+        <span class="fontW">URL:</span> {{item.url}}
+      </div>
+      <div class="info-item" *ngIf="item.type === 'Function'">
+        <span class="fontW">Runtime: </span>{{item.runtime}}
+      </div>
+      <div class="info-item">
+        <span class="fontW">TimeoutSeconds:</span> {{item.timeoutSeconds}}
+      </div>
+    </div>
+  </div>
+  <div class="operation-card-content">
+    No description.
+  </div>
+  <div class="operation-card-action">
+    <button mat-icon-button [matMenuTriggerFor]="menu">
+      <mat-icon>menu</mat-icon>
+    </button>
+    <mat-menu #menu="matMenu" yPosition="above">
+      <button mat-menu-item (click)="edit()">Edit</button>
+      <button mat-menu-item (click)="delete()">Delete</button>
+    </mat-menu>
+  </div>
+</mat-card>
