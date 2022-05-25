@@ -1,4 +1,5 @@
 import { ErrorDialogComponent } from './error-dialog/error-dialog.component';
+import { DeleteDialogComponent } from './component/delete-dialog/delete-dialog.component';
 import { httpInterceptorProviders } from './http-interceptors/index';
 import { MatButtonModule } from '@angular/material/button';
 import { NgModule } from '@angular/core';
@@ -17,7 +18,12 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
-  declarations: [AppComponent, LayoutComponent, ErrorDialogComponent],
+  declarations: [
+    AppComponent,
+    LayoutComponent,
+    DeleteDialogComponent,
+    ErrorDialogComponent,
+  ],
   imports: [
     BrowserModule,
     AppRoutingModule,
