@@ -1,0 +1,66 @@
+.trigger-card {
+  width: 100%;
+  height: 180px;
+  box-sizing: border-box;
+  .trigger-card-header {
+    display: flex;
+    color: #000;
+    margin-top: 9px;
+    height: 64px;
+
+    .trigger-card-header-icon {
+      margin-top: 2px;
+      width: 64px;
+      background-size: contain;
+      background-repeat: no-repeat;
+    }
+    .trigger-card-header-info {
+      margin-left: 12px;
+      flex: 1;
+      .info-name {
+        font-size: 18px;
+        font-weight: 500;
+        margin-bottom: 8px;
+        display:  flex;
+        justify-content: space-around;
+      }
+      .info-item {
+        width: 100%;
+        font-size: 12px;
+        line-height: 18px;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        .fontW {
+          font-weight: 500;
+        }
+      }
+    }
+    .trigger-card-header-type {
+      margin-left: auto;
+      font-size: 12px;
+      font-weight: 500;
+    }
+  }
+
+  .trigger-card-content {
+    margin-top: 22px;
+  }
+  .trigger-card-action {
+    display: flex;
+    justify-content: right;
+  }
+}
+
+.Cron {
+  background-image: url('./../../assets/img/trigger-cron.svg');
+}
+
+.PrometheusAlert {
+  background-image: url('./../../assets/img/trigger-prometheus-alert.svg');
+}
+
+.KubernetesEvent {
+  background-image: url('./../../assets/img/trigger-kuberntes-event.svg');
+}
+

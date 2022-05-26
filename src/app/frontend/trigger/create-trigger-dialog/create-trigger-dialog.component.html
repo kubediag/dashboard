@@ -1,0 +1,19 @@
+<h2 mat-dialog-title>Create Trigger </h2>
+<mat-dialog-content class="mat-typography">
+  <div class="text">Please Select one of the following trigger type.</div>
+  <div matRipple class="item" mat-dialog-close="createPrometheusAlert">
+    <div class="type">PrometheusAlert</div>
+    <div class="desc">Specifies the template to create a diagnosis from a prometheus alert.</div>
+  </div>
+  <div matRipple class="item" mat-dialog-close="createScriptKubernetesEvent">
+    <div class="type">KubernetesEvent</div>
+    <div class="desc">Specifies the template to create a diagnosis from a kubernetes event.</div>
+  </div>
+  <div matRipple class="item" mat-dialog-close="createCron">
+    <div class="type">Cron</div>
+    <div class="desc">Specifies the template to create a diagnosis periodically at fixed times.</div>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close cdkFocusInitial color="primary">Cancel</button>
+</mat-dialog-actions>
