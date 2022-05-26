@@ -1,0 +1,77 @@
+.full-width {
+  width: 100%;
+}
+
+.shipping-card {
+  min-width: 120px;
+  margin: 20px auto 0;
+  padding: 28px 40px;
+}
+.input-desc {
+  display: flex;
+  align-items: center;
+  font-size: 18px;
+}
+.title {
+  font-weight: 600;
+  font-size: 24px;
+  line-height: 36px;
+  display: flex;
+  align-items: center;
+  color: #000000;
+  margin-bottom: 12px;
+}
+.form-title {
+  font-weight: 500;
+  font-size: 20px;
+  margin: 24px 0;
+}
+
+.mat-radio-button {
+  display: block;
+  margin: 5px 0;
+}
+
+table {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.to {
+  display: flex;
+}
+
+.select {
+  width: 53px;
+  height: 21px;
+  margin: 0 8px 0 0;
+  padding: 0;
+  background-color: #f8f8f8;
+  text-align: center;
+}
+
+.row {
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 16px;
+}
+
+.col {
+  display: flex;
+  flex-direction: row;
+  flex: 1;
+  margin-right: 20px;
+}
+
+.col:last-child {
+  margin-right: 0;
+}
+.tab-content {
+  min-height: 330px;
+  padding-top: 30px;
+  box-sizing: border-box;
+}
+.textarea {
+  height: 320px;
+  background-color: #f8f8f8;
+}
