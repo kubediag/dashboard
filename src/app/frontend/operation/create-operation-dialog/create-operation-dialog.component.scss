@@ -1,0 +1,24 @@
+.mat-typography {
+  font-size: 18px;
+  margin-bottom: 26px;
+  padding: 0 50px;
+  .text {
+    margin-bottom: 20px;
+  }
+  .item {
+    padding: 14px;
+    background: #f8f8f8;
+    box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.15);
+    color: #000;
+    margin-top: 22px;
+    cursor: pointer;
+    .type {
+      font-weight: 500;
+      font-size: 14px;
+    }
+    .desc {
+      font-weight: 400;
+      font-size: 12px;
+    }
+  }
+}

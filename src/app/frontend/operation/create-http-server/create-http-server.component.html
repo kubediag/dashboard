@@ -1,0 +1,117 @@
+<mat-card class="shipping-card">
+  <div class="title">
+    {{title}} Operation (HTTPServer)
+  </div>
+  <mat-tab-group dynamicHeight>
+    <mat-tab label="Form">
+      <form [formGroup]="addressForm" novalidate (ngSubmit)="onSubmit()">
+        <div class="tab-content">
+          <div class="row">
+            <div class="col">
+              <mat-form-field class="full-width">
+                <input matInput placeholder="Name" formControlName="name" [readonly]="isEdit">
+                <mat-error *ngIf="addressForm.controls['name'].hasError('required')">
+                  Name is <strong>required</strong>
+                </mat-error>
+              </mat-form-field>
+            </div>
+            <div class="col input-desc">
+              Name of created Operation(HttpServer).
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <mat-form-field class="full-width">
+                <input matInput placeholder="Address" formControlName="address">
+                <mat-error *ngIf="addressForm.controls['address'].hasError('required')">
+                  Address is <strong>required</strong>
+                </mat-error>
+              </mat-form-field>
+            </div>
+            <div class="col input-desc">
+              The serving address of the processor. It must be either an IP or a DNS address. Defaults to KubeDiag agent
+              advertised address if not specified.
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <mat-form-field class="full-width">
+                <input matInput placeholder="Port" type="number" formControlName="port">
+                <mat-error *ngIf="addressForm.controls['port'].hasError('required')">
+                  Port is <strong>required</strong>
+                </mat-error>
+              </mat-form-field>
+            </div>
+            <div class="col input-desc">
+              The serving port of the processor. Defaults to KubeDiag agent serving port if not specified.
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <mat-form-field class="full-width">
+                <input matInput placeholder="Path" formControlName="path">
+                <mat-error *ngIf="addressForm.controls['path'].hasError('required')">
+                  Path is <strong>required</strong>
+                </mat-error>
+              </mat-form-field>
+            </div>
+            <div class="col input-desc">
+              The serving http path of processor.
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <mat-form-field class="full-width">
+                <mat-select placeholder="Scheme" formControlName="scheme">
+                  <mat-option value="http">http</mat-option>
+                  <mat-option value="https">https</mat-option>
+                </mat-select>
+                <mat-error *ngIf="addressForm.controls['scheme'].hasError('required')">
+                  Scheme is <strong>required</strong>
+                </mat-error>
+              </mat-form-field>
+            </div>
+            <div class="col input-desc">
+              The serving scheme of processor. It must be either http or https.
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <mat-form-field class="full-width">
+                <input matInput placeholder="TimeoutSeconds" type="number" formControlName="timeoutSeconds">
+                <mat-error *ngIf="addressForm.controls['timeoutSeconds'].hasError('required')">
+                  TimeoutSeconds is <strong>required</strong>
+                </mat-error>
+              </mat-form-field>
+            </div>
+            <div class="col input-desc">
+              Number of seconds after which the processor times out. Defaults to 30 seconds. Minimum value is 1.
+            </div>
+          </div>
+          <mat-card-actions align="end">
+            <button mat-raised-button color="primary" type="submit">Submit</button>
+            <a mat-button (click)="cancel()">Cancel</a>
+          </mat-card-actions>
+        </div>
+      </form>
+    </mat-tab>
+    <mat-tab label="Yaml">
+      <form [formGroup]="yamlForm" (ngSubmit)="submitByYaml()">
+        <div class="tab-content">
+          <div class="row">
+            <div class="col">
+              <mat-form-field class="full-width">
+                <textarea matInput formControlName="yaml" class="textarea"></textarea>
+              </mat-form-field>
+            </div>
+          </div>
+        </div>
+        <mat-card-actions align="end">
+          <button mat-raised-button color="primary" type="submit">Submit</button>
+          <a mat-button (click)="cancel()">Cancel</a>
+        </mat-card-actions>
+      </form>
+
+    </mat-tab>
+  </mat-tab-group>
+</mat-card>
