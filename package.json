@@ -3,8 +3,11 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
-    "build": "ng build",
+    "start:frontend": "ng serve --port %npm_config_port% --host %npm_config_host%",
+    "start:backend": "cd src/app/backend && npm run dev",
+    "build:frontend": "ng build",
+    "build:backend": "cd src/app/backend && npm run build",
+    "build": "npm run build:backend && npm run build:frontend",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "lint": "ng lint",
