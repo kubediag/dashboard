@@ -1,0 +1,36 @@
+<mat-card class="trigger-card">
+  <div class="trigger-card-header">
+    <div class="trigger-card-header-icon" [class]="item.type"></div>
+    <div class="trigger-card-header-info">
+      <div class="info-name">
+        {{item.name}}
+        <div class="trigger-card-header-type">{{item.type}}</div>
+
+      </div>
+      <div class="info-item">
+        <span class="fontW">OperationSet: </span>{{item.operationSet}}
+      </div>
+      <div class="info-item" *ngIf="item.type === 'PrometheusAlert'">
+        <span class="fontW">AlertName: </span> {{item.alertName}}
+      </div>
+      <div class="info-item" *ngIf="item.type === 'KubernetesEvent'">
+        <span class="fontW">Reason: </span>{{item.reason}}
+      </div>
+      <div class="info-item" *ngIf="item.type === 'Cron'">
+        <span class="fontW">Schedule: </span> {{item.schedule}}
+      </div>
+    </div>
+  </div>
+  <div class="trigger-card-content">
+    No description.
+  </div>
+  <div class="trigger-card-action">
+    <button mat-icon-button [matMenuTriggerFor]="menu">
+      <mat-icon>menu</mat-icon>
+    </button>
+    <mat-menu #menu="matMenu" yPosition="above">
+      <button mat-menu-item (click)="edit()">Edit</button>
+      <button mat-menu-item (click)="delete()">Delete</button>
+    </mat-menu>
+  </div>
+</mat-card>

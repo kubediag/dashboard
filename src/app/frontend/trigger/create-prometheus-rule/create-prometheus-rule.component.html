@@ -1,0 +1,147 @@
+<mat-card class="shipping-card">
+  <div class="title">
+    {{title}} Trigger (PrometheusAlert)
+  </div>
+  <mat-tab-group dynamicHeight>
+    <mat-tab label="Form">
+      <form [formGroup]="addressForm" novalidate (ngSubmit)="onSubmit()">
+        <div class="tab-content">
+          <div class="row">
+            <div class="col">
+              <mat-form-field class="full-width">
+                <input matInput placeholder="Name" formControlName="name" [readonly]="isEdit">
+                <mat-error *ngIf="addressForm.controls['name'].hasError('required')">
+                  Name is <strong>required</strong>
+                </mat-error>
+              </mat-form-field>
+            </div>
+            <div class="col input-desc">
+              Name of created Trigger(PrometheusAlert).
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <mat-form-field class="full-width">
+                <mat-select placeholder="OperationSet" formControlName="operationSet">
+                  <mat-option *ngFor="let operationSet of operationSetList" [value]="operationSet">
+                    {{ operationSet }}
+                  </mat-option>
+                </mat-select>
+                <mat-error *ngIf="addressForm.controls['operationSet'].hasError('required')">
+                  OperationSet is <strong>required</strong>
+                </mat-error>
+              </mat-form-field>
+            </div>
+            <div class="col input-desc">
+              The name of referenced operation set in the generated diagnosis.
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <mat-form-field class="full-width">
+                <input matInput placeholder="NodeName" formControlName="nodeName">
+                <mat-error *ngIf="addressForm.controls['nodeName'].hasError('required')">
+                  NodeName is <strong>required</strong>
+                </mat-error>
+              </mat-form-field>
+            </div>
+            <div class="col input-desc">
+              The default node which the diagnosis is on.
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <mat-form-field class="full-width">
+                <input matInput placeholder="AlertName" formControlName="alertName">
+              </mat-form-field>
+            </div>
+            <div class="col input-desc">
+              The regular expression for matching "AlertName" of prometheus alert.
+            </div>
+          </div>
+
+          <div class="parameter-text">
+            Labels
+          </div>
+          <div class="parameter">
+            <div class="parameter-form">
+              <div class="parameter-item" formArrayName="labels"
+                *ngFor="let param of labels.controls; let i = index;">
+                <div class="row" [formGroupName]="i">
+                  <div class="col">
+                    <mat-form-field class="full-width">
+                      <input matInput placeholder="Key" formControlName="key">
+                    </mat-form-field>
+                  </div>
+                  <div class="col">
+                    <mat-form-field class="full-width">
+                      <input matInput placeholder="Value" formControlName="value">
+                    </mat-form-field>
+                  </div>
+                </div>
+                <a mat-icon-button *ngIf="i !== labels.length - 1" (click)="deleteLabelsDate(i)">
+                  <img width="13" src="./../../../assets//img/delete.png">
+                </a>
+                <a mat-icon-button *ngIf="i === labels.length - 1" (click)="addLabelsData()">
+                  <img width="13" src="./../../../assets//img/add.png">
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <div class="parameter-text">
+            Annotations
+          </div>
+          <div class="parameter">
+            <div class="parameter-form">
+              <div class="parameter-item" formArrayName="annotations"
+                *ngFor="let param of annotations.controls; let i = index;">
+                <div class="row" [formGroupName]="i">
+                  <div class="col">
+                    <mat-form-field class="full-width">
+                      <input matInput placeholder="Key" formControlName="key">
+                    </mat-form-field>
+                  </div>
+                  <div class="col">
+                    <mat-form-field class="full-width">
+                      <input matInput placeholder="Value" formControlName="value">
+                    </mat-form-field>
+                  </div>
+                </div>
+                <a mat-icon-button *ngIf="i !== annotations.length - 1" (click)="deleteAnnotationsDate(i)">
+                  <img width="13" src="./../../../assets//img/delete.png">
+                </a>
+                <a mat-icon-button *ngIf="i === annotations.length - 1" (click)="addAnnotationsData()">
+                  <img width="13" src="./../../../assets//img/add.png">
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <mat-card-actions align="end">
+            <button mat-raised-button color="primary" type="submit">Submit</button>
+            <a mat-button (click)="cancel()">Cancel</a>
+          </mat-card-actions>
+        </div>
+      </form>
+    </mat-tab>
+    <mat-tab label="Yaml">
+      <form [formGroup]="yamlForm" (ngSubmit)="submitByYaml()">
+        <div class="tab-content">
+          <div class="row">
+            <div class="col">
+              <mat-form-field class="full-width">
+                <textarea matInput formControlName="yaml" class="textarea"></textarea>
+              </mat-form-field>
+            </div>
+          </div>
+        </div>
+        <mat-card-actions align="end">
+          <button mat-raised-button color="primary" type="submit">Submit</button>
+          <a mat-button (click)="cancel()">Cancel</a>
+        </mat-card-actions>
+      </form>
+
+    </mat-tab>
+  </mat-tab-group>
+</mat-card>

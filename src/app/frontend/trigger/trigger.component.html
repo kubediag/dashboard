@@ -1,1 +1,14 @@
-<p>trigger works!</p>
+<div class="trigger">
+  <div class="header">
+    <span></span>
+    <a mat-button class="btn" (click)="create()">Create</a>
+  </div>
+  <div class="content">
+    <div class="cards">
+      <app-trigger-card *ngFor="let item of list; let i = index" [item]="item" [id]="i" (deleteItem)="delete(i, item)">
+      </app-trigger-card>
+    </div>
+
+  </div>
+
+</div>
