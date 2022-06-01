@@ -1,0 +1,12 @@
+FROM node:16
+
+WORKDIR /usr/src/app
+# Copy the node source
+COPY ./src/app/backend/ ./
+RUN npm install
+# Build Typescript into Javascript
+RUN npm run build
+
+EXPOSE 7000
+
+CMD [ "node", "dist/index.js"]
