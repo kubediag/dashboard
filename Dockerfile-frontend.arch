@@ -1,0 +1,16 @@
+FROM node:16
+
+WORKDIR /web
+# Copy the Angular source code
+COPY . .
+RUN npm install
+# Build
+RUN npm run build:frontend
+
+FROM nginx:1.21.0
+
+# Copy nginx config
+COPY ./default.conf /etc/nginx/conf.d
+COPY --from=0 /web/dist/frontend  /usr/share/nginx/html/
+
+EXPOSE 8080
