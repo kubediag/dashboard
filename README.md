@@ -1,27 +1,26 @@
 # Dashboard
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 13.2.5.
+Dashboard is a general purpose, web-based UI for KubeDiag.
 
-## Development server
+## Installation
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+Please make sure you have installed [KubeDiag](https://github.com/kubediag/kubediag) before installing dashboard. The simplest way to install dashboard is running the following command:
 
-## Code scaffolding
+```shell
+kubectl apply -f https://raw.githubusercontent.com/kubediag/dashboard/master/config/deploy
+```
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+The dashboard is ready if the pod is in running state:
 
-## Build
+```shell
+$ kubectl get pod -n kubediag -l app=kubediag-dashboard
+NAME                                  READY   STATUS    RESTARTS   AGE
+kubediag-dashboard-75bccc5f8f-xxmgk   2/2     Running   0          3m20s
+```
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+A `NodePort` service is deployed and exposed on port 30055 on the node:
 
-## Running unit tests
-
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
-
-## Running end-to-end tests
-
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+```shell
+$ kubectl get service -n kubediag kubediag-dashboard
+NAME                 TYPE       CLUSTER-IP      EXTERNAL-IP   PORT(S)        AGE
+kubediag-dashboard   NodePort   10.104.255.77   <none>        80:30055/TCP   5m46s
