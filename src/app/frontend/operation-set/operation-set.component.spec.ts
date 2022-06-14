@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+import { RouterTestingModule } from '@angular/router/testing';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatDialogModule } from '@angular/material/dialog';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { OperationSetComponent } from './operation-set.component';
@@ -25,6 +29,12 @@ describe('OperationSetComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [OperationSetComponent],
+      imports: [
+        HttpClientTestingModule,
+        MatDialogModule,
+        MatSnackBarModule,
+        RouterTestingModule,
+      ],
     }).compileComponents();
   });
 

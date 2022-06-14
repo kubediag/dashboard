@@ -35,8 +35,6 @@ export class ErrorDialogService {
 
     dialogRef.afterClosed().subscribe(result => {
       this.isDialogOpen = false;
-      let animal;
-      animal = result;
     });
   }
 }

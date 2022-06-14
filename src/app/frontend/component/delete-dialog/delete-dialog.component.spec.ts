@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { MatDialogModule, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { DeleteDialogComponent } from './delete-dialog.component';
@@ -25,6 +26,8 @@ describe('DeleteDialogComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [DeleteDialogComponent],
+      imports: [MatDialogModule],
+      providers: [{ provide: MAT_DIALOG_DATA, useValue: {} }],
     }).compileComponents();
   });
 

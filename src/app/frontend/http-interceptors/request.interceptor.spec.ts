@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { MatDialogModule } from '@angular/material/dialog';
 import { TestBed } from '@angular/core/testing';
 
 import { RequestInterceptor } from './request.interceptor';
@@ -22,6 +23,7 @@ describe('RequestInterceptor', () => {
   beforeEach(() =>
     TestBed.configureTestingModule({
       providers: [RequestInterceptor],
+      imports: [MatDialogModule],
     })
   );
 
