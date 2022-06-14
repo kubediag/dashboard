@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 
 import { TriggerService } from './trigger.service';
@@ -21,6 +22,11 @@ import { TriggerService } from './trigger.service';
 describe('TriggerService', () => {
   let service: TriggerService;
 
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [HttpClientTestingModule],
+    }).compileComponents();
+  });
   beforeEach(() => {
     TestBed.configureTestingModule({});
     service = TestBed.inject(TriggerService);

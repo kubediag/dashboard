@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { RouterTestingModule } from '@angular/router/testing';
+import { ReactiveFormsModule } from '@angular/forms';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { CreatePrometheusRuleComponent } from './create-prometheus-rule.component';
@@ -25,6 +29,12 @@ describe('CreatePrometheusRuleComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [CreatePrometheusRuleComponent],
+      imports: [
+        ReactiveFormsModule,
+        RouterTestingModule,
+        HttpClientTestingModule,
+        MatSnackBarModule,
+      ],
     }).compileComponents();
   });
 

@@ -23,14 +23,14 @@ import { OperationService } from './operation.service';
 import { OperationItem } from './../type/operation';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
-import { Component, AfterViewInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 
 @Component({
   selector: 'app-operation',
   templateUrl: './operation.component.html',
   styleUrls: ['./operation.component.scss'],
 })
-export class OperationComponent implements AfterViewInit {
+export class OperationComponent implements OnInit {
   displayedColumns: string[] = [
     'name',
     'scheme',
@@ -40,7 +40,7 @@ export class OperationComponent implements AfterViewInit {
     'timeoutSeconds',
     'operate',
   ];
-  list?: OperationItem[];
+  list: OperationItem[] = [];
   dataSource!: MatTableDataSource<OperationItem>;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   constructor(
@@ -50,7 +50,7 @@ export class OperationComponent implements AfterViewInit {
     private _snackBar: MatSnackBar
   ) {}
 
-  ngAfterViewInit(): void {
+  ngOnInit(): void {
     this.getOperationList();
   }
 

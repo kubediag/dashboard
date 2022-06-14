@@ -19,7 +19,7 @@ import { yamlToJson, jsonToYaml } from './../../utils/index';
 import { OperationService } from './../operation.service';
 import { OperationFunction, CodeSourceItem } from './../../type/operation';
 import { Router, ActivatedRoute } from '@angular/router';
-import { FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
+import { FormBuilder, Validators, FormArray } from '@angular/forms';
 import { Component, OnInit } from '@angular/core';
 
 @Component({

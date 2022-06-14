@@ -25,25 +25,22 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
   styleUrls: ['./trigger-card.component.scss'],
 })
 export class TriggerCardComponent implements OnInit {
-  type?: string;
   @Input() item!: TriggerItem;
   @Input() id!: number;
   @Output() deleteItem = new EventEmitter();
   name: string = 'http-server-operation';
-  constructor(private triggerService: TriggerService, private router: Router) {}
+  constructor(private router: Router) {}
 
-  ngOnInit(): void {
-    this.type = 'Cron';
-  }
+  ngOnInit(): void {}
   delete() {
     this.deleteItem.emit();
   }
   edit() {
-    if (this.item.type === 'PrometheusAlert') {
+    if (this.item.type! === 'PrometheusAlert') {
       this.router.navigate([`/trigger/edit-prometheus-alert`], {
         queryParams: { id: this.id },
       });
-    } else if (this.item.type === 'KubernetesEvent') {
+    } else if (this.item.type! === 'KubernetesEvent') {
       this.router.navigate([`/trigger/edit-kubernetes-event`], {
         queryParams: { id: this.id },
       });

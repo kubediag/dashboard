@@ -24,16 +24,13 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
   styleUrls: ['./operation-card.component.scss'],
 })
 export class OperationCardComponent implements OnInit {
-  type?: string;
   @Input() item!: OperationItem;
   @Input() id!: number;
   @Output() deleteItem = new EventEmitter();
   name: string = 'http-server-operation';
   constructor(private router: Router) {}
 
-  ngOnInit(): void {
-    this.type = 'HTTPServer';
-  }
+  ngOnInit(): void {}
   delete() {
     this.deleteItem.emit();
   }

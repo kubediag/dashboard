@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { MatDialogModule } from '@angular/material/dialog';
 import { TestBed } from '@angular/core/testing';
 
 import { ErrorDialogService } from './error-dialog.service';
@@ -21,6 +22,11 @@ import { ErrorDialogService } from './error-dialog.service';
 describe('ErrorDialogService', () => {
   let service: ErrorDialogService;
 
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [MatDialogModule],
+    }).compileComponents();
+  });
   beforeEach(() => {
     TestBed.configureTestingModule({});
     service = TestBed.inject(ErrorDialogService);

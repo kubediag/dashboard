@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
+import { RouterTestingModule } from '@angular/router/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { TriggerCardComponent } from './trigger-card.component';
+import { MatMenuModule } from '@angular/material/menu';
 
 describe('TriggerCardComponent', () => {
   let component: TriggerCardComponent;
@@ -25,6 +27,7 @@ describe('TriggerCardComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [TriggerCardComponent],
+      imports: [MatMenuModule, RouterTestingModule.withRoutes([])],
     }).compileComponents();
   });
 

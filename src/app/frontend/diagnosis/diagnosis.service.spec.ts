@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 
 import { DiagnosisService } from './diagnosis.service';
@@ -21,6 +22,11 @@ import { DiagnosisService } from './diagnosis.service';
 describe('DiagnosisService', () => {
   let service: DiagnosisService;
 
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [HttpClientTestingModule],
+    }).compileComponents();
+  });
   beforeEach(() => {
     TestBed.configureTestingModule({});
     service = TestBed.inject(DiagnosisService);
