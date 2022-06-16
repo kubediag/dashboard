@@ -1,0 +1,22 @@
+version: 2.1
+orbs:
+  node: circleci/node@5.0.2
+
+# Define the jobs we want to run for this project
+jobs:
+  lint:
+    executor: node/default
+    steps:
+      - checkout
+      - node/install-packages:
+          pkg-manager: npm
+      - run:
+          name: Lint code
+          command: npm run lint
+
+# Orchestrate our job run sequence
+workflows:
+  lint:
+    jobs:
+      - lint
+
