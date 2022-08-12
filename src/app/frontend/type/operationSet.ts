@@ -16,9 +16,9 @@
 
 export interface OperationSetItem {
   name: string;
-  ready: boolean;
+  ready?: boolean;
   age: string;
-  operations: string;
+  operations?: string;
   adjacency: Adjacency[];
 }
 
@@ -39,7 +39,7 @@ export interface OperationSet {
     name: string;
     creationTimestamp: string;
   };
-  status: {
+  status?: {
     paths: string;
     ready: boolean;
   };

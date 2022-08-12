@@ -47,18 +47,18 @@ export class DiagnosisService {
         const result: DiagnosisItem = {
           name: item.metadata.name,
           namespace: item.metadata.namespace,
-          operationSet: item.spec.operationSet,
-          node: item.spec.nodeName,
-          status: item.status.phase,
+          operationSet: item.spec?.operationSet,
+          node: item.spec?.nodeName,
+          status: item.status?.phase || 'Invalid',
           age: getTimeAge(item.metadata.creationTimestamp),
           parameters: [],
-          podName: item.spec.podReference?.name,
-          podNamespace: item.spec.podReference?.namespace,
+          podName: item.spec?.podReference?.name,
+          podNamespace: item.spec?.podReference?.namespace,
         };
-        for (let key in item.spec.parameters) {
-          result.parameters.push({
+        for (let key in item.spec?.parameters) {
+          result.parameters?.push({
             key,
-            value: item.spec.parameters[key],
+            value: item.spec?.parameters[key],
           });
         }
 
