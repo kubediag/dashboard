@@ -16,20 +16,20 @@
 
 export interface ParameterItem {
   key: string;
-  value: string;
+  value?: string;
 }
 
 export interface DiagnosisItem {
   namespace: string;
   name: string;
-  operationSet: string;
-  node: string;
+  operationSet?: string;
+  node?: string;
   status: string;
   age: string;
   podName?: string;
   podNamespace?: string;
   yaml?: string;
-  parameters: ParameterItem[];
+  parameters?: ParameterItem[];
   items?: [];
 }
 
@@ -44,16 +44,16 @@ export interface Diagnosis {
     namespace: string;
     creationTimestamp: string;
   };
-  spec: {
+  spec?: {
     operationSet: string;
-    nodeName: string;
+    nodeName?: string;
     parameters?: Record<string, string>;
     podReference?: {
       name: string;
       namespace: string;
     };
   };
-  status: {
+  status?: {
     phase: string;
   };
 }
