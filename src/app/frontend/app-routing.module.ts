@@ -45,6 +45,10 @@ const routes: Routes = [
     loadChildren: () =>
       import('./trigger/trigger.module').then(m => m.TriggerModule),
   },
+  {
+    path: 'event',
+    loadChildren: () => import('./event/event.module').then(m => m.EventModule),
+  },
 ];
 
 @NgModule({

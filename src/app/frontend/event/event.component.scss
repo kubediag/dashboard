@@ -1,0 +1,63 @@
+.event {
+  .event-header{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    .card {
+      flex: 1;
+      display: flex;
+      padding: 28px 0 20px 32px;
+      background-color: #fff;
+      border-radius: 2px;
+
+      .img {
+        display: flex;
+        align-items: center;
+      }
+      .card-content {
+        margin-left: 20px;
+        font-weight: 500;
+        .content-title {
+          font-size: 14px;
+          line-height: 24px;
+        }
+        .content-value {
+          font-size: 30px;
+          line-height: 46px;
+        }
+      }
+    }
+    .card:nth-child(2) {
+      margin: 0 32px;
+    }
+  }
+  .event-content {
+    margin-top: 32px;
+    .search{
+      width: 100%;
+    }
+    table {
+      width: 100%;
+    }
+  }
+}
+
+.mat-form-field {
+  font-size: 14px;
+  width: 100%;
+}
+
+.mat-column-class {
+  width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.mat-column-updatedTime {
+  width: 150px;
+}
+.mat-column-operate {
+  width: 50px;
+}
+.mat-column-count {
+  width: 50px;
+}
