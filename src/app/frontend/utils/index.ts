@@ -35,7 +35,9 @@ export const yamlToJson = async (str: string): Promise<object> => {
   return data;
 };
 
-export const jsonToYaml = async (obj: any): Promise<string> => {
-  const data: any = await yaml.dump(obj);
+export const jsonToYaml = (obj: any): Promise<string> => {
+  const data: any = yaml.dump(obj, {
+    indent: 4,
+  });
   return data;
 };

@@ -1,0 +1,37 @@
+.detail {
+  padding: 0;
+}
+
+.title {
+  font-weight: 600;
+  font-size: 24px;
+  line-height: 112px;
+  color: #000000;
+  border-bottom: 1px solid #d6dce0;
+  height: 112px;
+  box-sizing: border-box;
+  padding-left: 40px;
+}
+
+.content {
+  padding: 36px 20px 36px 40px;
+  box-sizing: border-box;
+
+  .info {
+    margin-bottom: 20px;
+    font-size: 14px;
+    color: #000;
+    display: flex;
+    align-items: flex-start;
+    .info-title {
+      width: 25%;
+      font-weight: 500;
+      flex: none;
+    }
+    .info-value {
+      width: 75%;
+      overflow-x: auto;
+      white-space: pre-wrap;
+    }
+  }
+}
