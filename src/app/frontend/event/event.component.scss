@@ -1,5 +1,5 @@
 .event {
-  .event-header{
+  .event-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -33,7 +33,7 @@
   }
   .event-content {
     margin-top: 32px;
-    .search{
+    .search {
       width: 100%;
     }
     table {
@@ -48,16 +48,32 @@
 }
 
 .mat-column-class {
-  width: 180px;
+  width: 35%;
   overflow: hidden;
   text-overflow: ellipsis;
+  padding-right: 16px;
 }
 .mat-column-updatedTime {
-  width: 150px;
+  width: 20%;
+  padding-right: 16px;
 }
 .mat-column-operate {
-  width: 50px;
+  width: 5%;
+  padding-right: 16px;
 }
 .mat-column-count {
-  width: 50px;
+  width: 5%;
+  padding-right: 16px;
+}
+.mat-column-group {
+  width: 15%;
+  padding-right: 16px;
+}
+.mat-column-severity {
+  width: 10%;
+  padding-right: 16px;
+}
+.mat-column-source {
+  width: 10%;
+  padding-right: 16px;
 }
