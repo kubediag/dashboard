@@ -1,0 +1,65 @@
+<!--
+ Copyright 2022 The KubeDiag Authors
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+<mat-card class="detail">
+  <div class="title">Event Details</div>
+  <div class="content">
+    <div class="info">
+      <div class="info-title">Name</div>
+      <div class="info-value">{{ detail.name }}</div>
+    </div>
+    <div class="info">
+      <div class="info-title">Class</div>
+      <div class="info-value">{{ detail.class }}</div>
+    </div>
+    <div class="info">
+      <div class="info-title">Group</div>
+      <div class="info-value">{{ detail.group }}</div>
+    </div>
+    <div class="info">
+      <div class="info-title">Severity</div>
+      <div class="info-value">{{ detail.severity }}</div>
+    </div>
+    <div class="info">
+      <div class="info-title">Source</div>
+      <div class="info-value">{{ detail.source }}</div>
+    </div>
+    <div class="info">
+      <div class="info-title">Count</div>
+      <div class="info-value">{{ detail.count }}</div>
+    </div>
+    <div class="info">
+      <div class="info-title">Created Time</div>
+      <div class="info-value">{{ detail.createdTime }}</div>
+    </div>
+    <div class="info">
+      <div class="info-title">Updated Time</div>
+      <div class="info-value">{{ detail.updatedTime }}</div>
+    </div>
+    <div class="info">
+      <div class="info-title">Summary</div>
+      <div class="info-value">{{ detail.summary }}</div>
+    </div>
+    <div class="info">
+      <div class="info-title">Custom Details</div>
+      <div class="info-value">{{ customDetail }}</div>
+    </div>
+    <mat-card-actions align="end" class="card-end">
+      <button mat-raised-button color="primary" (click)="create()">Create Trigger</button>
+      <a mat-button (click)="cancel()">Cancel</a>
+    </mat-card-actions>
+  </div>
+</mat-card>
