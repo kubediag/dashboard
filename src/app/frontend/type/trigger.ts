@@ -15,6 +15,7 @@
  */
 
 export interface TriggerPromethuesAlert {
+  id: number;
   name: string;
   operationSet: string;
   type: 'PrometheusAlert';
@@ -25,6 +26,7 @@ export interface TriggerPromethuesAlert {
   annotations?: { key: string; value: string }[];
 }
 export interface TriggerKubernetesEvent {
+  id: number;
   name: string;
   operationSet: string;
   type: 'KubernetesEvent';
@@ -36,6 +38,7 @@ export interface TriggerKubernetesEvent {
   eventMessage?: string;
 }
 export interface TriggerCron {
+  id: number;
   name: string;
   operationSet: string;
   type: 'Cron';

@@ -15,6 +15,7 @@
  */
 
 export interface OperationSetItem {
+  id: number;
   name: string;
   ready?: boolean;
   age: string;

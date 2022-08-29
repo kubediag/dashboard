@@ -15,6 +15,7 @@
  */
 
 export interface OperationHTTPServer {
+  id: number;
   name: string;
   scheme: string;
   address?: string;
@@ -26,6 +27,7 @@ export interface OperationHTTPServer {
 }
 
 export interface OperationScriptRunner {
+  id: number;
   name: string;
   script?: string;
   argKeys?: string[];
@@ -40,6 +42,7 @@ export interface CodeSourceItem {
 }
 
 export interface OperationFunction {
+  id: number;
   name: string;
   timeoutSeconds: number;
   codeSource?: CodeSourceItem[];

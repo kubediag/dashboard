@@ -20,6 +20,7 @@ export interface ParameterItem {
 }
 
 export interface DiagnosisItem {
+  id: number;
   namespace: string;
   name: string;
   operationSet?: string;

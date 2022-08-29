@@ -84,14 +84,14 @@
         </ng-container>
         <ng-container matColumnDef="operate">
           <th mat-header-cell *matHeaderCellDef></th>
-          <td mat-cell *matCellDef="let element; let i = index" align="center">
+          <td mat-cell *matCellDef="let element" align="center">
             <button mat-icon-button aria-label="Example icon button with a menu icon" [matMenuTriggerFor]="menu">
               <mat-icon>menu</mat-icon>
             </button>
             <mat-menu #menu="matMenu">
-              <button mat-menu-item (click)="inspect(i)">Inspect Detail</button>
+              <button mat-menu-item (click)="inspect(element.id)">Inspect Detail</button>
               <button mat-menu-item (click)="create()">Create Trigger</button>
-              <button mat-menu-item (click)="delete(i, element)">Delete</button>
+              <button mat-menu-item (click)="delete(element.id, element)">Delete</button>
             </mat-menu>
           </td>
         </ng-container>

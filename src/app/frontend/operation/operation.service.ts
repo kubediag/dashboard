@@ -41,12 +41,13 @@ export class OperationService {
     });
     const normalizeData = map((val: OperationRes): OperationItem[] => {
       this.rowList = val.items;
-      return val.items.map(item => {
+      return val.items.map((item, index) => {
         if (item.spec.processor.httpServer) {
           const scheme = item.spec.processor.httpServer?.scheme;
           const address = item.spec.processor.httpServer?.address || '0.0.0.0';
           const port = item.spec.processor.httpServer?.port || 8090;
           return {
+            id: index,
             name: item.metadata.name,
             scheme: scheme,
             address: address,
@@ -64,6 +65,8 @@ export class OperationService {
           };
         } else if (item.spec.processor.scriptRunner) {
           return {
+            id: index,
+
             name: item.metadata.name,
             timeoutSeconds: item.spec.processor.timeoutSeconds,
             script: item.spec.processor.scriptRunner?.script,
@@ -74,6 +77,7 @@ export class OperationService {
           };
         } else {
           const data: OperationFunction = {
+            id: index,
             name: item.metadata.name,
             runtime: item.spec.processor.function?.runtime,
             codeSource: [],

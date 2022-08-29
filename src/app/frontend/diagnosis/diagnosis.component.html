@@ -53,7 +53,7 @@
             <mat-icon>menu</mat-icon>
           </button>
           <mat-menu #menu="matMenu">
-            <button mat-menu-item (click)="edit(i)">Edit</button>
+            <button mat-menu-item (click)="edit(element.id)">Edit</button>
             <button mat-menu-item (click)="delete(i, element)">Delete</button>
           </mat-menu>
         </td>

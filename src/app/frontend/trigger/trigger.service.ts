@@ -41,9 +41,10 @@ export class TriggerService {
     });
     const normalizeData = map((val: TriggerRes): TriggerItem[] => {
       this.rowList = val.items;
-      return val.items.map(item => {
+      return val.items.map((item, index) => {
         if (item.spec.sourceTemplate.prometheusAlertTemplate) {
           const result: TriggerPromethuesAlert = {
+            id: index,
             name: item.metadata.name,
             operationSet: item.spec.operationSet,
             type: 'PrometheusAlert',
@@ -76,6 +77,7 @@ export class TriggerService {
           return result;
         } else if (item.spec.sourceTemplate.kubernetesEventTemplate) {
           return {
+            id: index,
             name: item.metadata.name,
             operationSet: item.spec.operationSet,
             type: 'KubernetesEvent',
@@ -92,6 +94,7 @@ export class TriggerService {
           };
         } else {
           return {
+            id: index,
             name: item.metadata.name,
             operationSet: item.spec.operationSet,
             type: 'Cron',
