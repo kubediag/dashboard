@@ -21,8 +21,8 @@
   </div>
   <div class="content">
     <div class="cards">
-      <app-operation-card *ngFor="let item of list; let i = index" [item]="item" [id]="i"
-        (deleteItem)="delete(i, item)"></app-operation-card>
+      <app-operation-card *ngFor="let item of list" [item]="item" [id]="item.id"
+        (deleteItem)="delete(item.id, item)"></app-operation-card>
     </div>
 
   </div>

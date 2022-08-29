@@ -1,4 +1,5 @@
 export interface EventItem {
+  id: number;
   class: string;
   count?: number;
   group: string;

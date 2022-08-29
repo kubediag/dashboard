@@ -43,8 +43,9 @@ export class DiagnosisService {
     });
     const normalizaData = map((val: DiagnosisRes) => {
       this.rowList = val.items;
-      return val.items.map(item => {
+      return val.items.map((item, index) => {
         const result: DiagnosisItem = {
+          id: index,
           name: item.metadata.name,
           namespace: item.metadata.namespace,
           operationSet: item.spec?.operationSet,

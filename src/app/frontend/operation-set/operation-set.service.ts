@@ -36,7 +36,8 @@ export class OperationSetService {
     });
     const normalizeData = map((val: OperationSetRes): OperationSetItem[] => {
       this.rowList = val.items;
-      return val.items.map(item => ({
+      return val.items.map((item, index) => ({
+        id: index,
         name: item.metadata.name,
         operations: item.status?.paths,
         adjacency: item.spec.adjacencyList,

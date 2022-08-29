@@ -35,8 +35,9 @@ export class EventService {
     });
     const normalizaData = map((val: EventRes) => {
       this.rowList = val.items;
-      return val.items.map(item => {
+      return val.items.map((item, index) => {
         const result: EventItem = {
+          id: index,
           name: item.metadata.name,
           class: item.spec.class,
           count: item.status?.count,
