@@ -37,7 +37,7 @@
                   <div class="codeSource-value">
                     <div [formGroupName]="currentCodeSourceIndex">
                       <textarea matInput
-                        [formControl]="$any(codeSource?.get('' + currentCodeSourceIndex)?.get('value'))"
+                        [formControl]="$any(codeSource.get('' + currentCodeSourceIndex)?.get('value'))"
                         class="function-textarea"></textarea>
                     </div>
                   </div>
@@ -75,11 +75,11 @@
           <div class="row">
             <div class="col">
               <mat-form-field class="full-width">
-                <select mat-select placeholder="Runtime" formControlName="runtime">
-                  <option mat-option *ngFor="let runtime of runtimeList" [ngValue]="runtime">
+                <mat-select placeholder="Runtime" formControlName="runtime">
+                  <mat-option *ngFor="let runtime of runtimeList" [value]="runtime">
                     {{ runtime }}
-                  </option>
-                </select>
+                  </mat-option>
+                </mat-select>
 
               </mat-form-field>
             </div>
