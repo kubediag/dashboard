@@ -19,11 +19,6 @@ import { RouterModule, Routes } from '@angular/router';
 
 const routes: Routes = [
   {
-    path: '',
-    redirectTo: 'diagnosis',
-    pathMatch: 'full',
-  },
-  {
     path: 'diagnosis',
     loadChildren: () =>
       import('./diagnosis/diagnosis.module').then(m => m.DiagnosisModule),
@@ -48,6 +43,10 @@ const routes: Routes = [
   {
     path: 'event',
     loadChildren: () => import('./event/event.module').then(m => m.EventModule),
+  },
+  {
+    path: '**',
+    redirectTo: 'diagnosis',
   },
 ];
 
