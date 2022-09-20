@@ -1,7 +1,7 @@
 
 # Image URL to use all building/pushing image targets
-IMG_FRONTEND ?= hub.c.163.com/kubediag/kubediag-frontend
-IMG_BACKEND ?= hub.c.163.com/kubediag/kubediag-backend
+IMG_FRONTEND ?= hub.c.163.com/kubediag/kubediag-dashboard-frontend
+IMG_BACKEND ?= hub.c.163.com/kubediag/kubediag-dashboard-backend
 
 # Image build dockerfile
 DOCKERFILE_FRONTEND ?= Dockerfile-frontend.arch
