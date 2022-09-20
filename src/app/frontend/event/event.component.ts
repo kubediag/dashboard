@@ -40,6 +40,7 @@ export class EventComponent implements OnInit {
     'updatedTime',
     'operate',
   ];
+  isLoadingResults: boolean = true;
   dataSource!: MatTableDataSource<EventItem>;
   total: number = 0;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -57,6 +58,7 @@ export class EventComponent implements OnInit {
     Promise.resolve().then(() => {
       this.eventService.getList().subscribe(data => {
         const list = data;
+        this.isLoadingResults = false;
         this.total = list.length;
         this.dataSource = new MatTableDataSource<EventItem>(list);
         this.dataSource.paginator = this.paginator;

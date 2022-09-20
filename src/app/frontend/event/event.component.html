@@ -52,6 +52,9 @@
       </mat-form-field>
     </div>
     <div class="table">
+      <div class="loading-shade" *ngIf="isLoadingResults">
+        <mat-spinner></mat-spinner>
+      </div>
       <table mat-table [dataSource]="dataSource">
 
         <ng-container matColumnDef="class">
@@ -101,9 +104,10 @@
         <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
       </table>
 
-      <mat-paginator [pageSizeOptions]="[5, 10, 20]" [pageSize]="10" showFirstLastButtons
-        aria-label="Select page of periodic elements">
-      </mat-paginator>
+
     </div>
+    <mat-paginator [pageSizeOptions]="[5, 10, 20]" [pageSize]="10" showFirstLastButtons
+      aria-label="Select page of periodic elements">
+    </mat-paginator>
   </div>
 </div>

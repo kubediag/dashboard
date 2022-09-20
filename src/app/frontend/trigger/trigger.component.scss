@@ -36,6 +36,8 @@
   }
   .content {
     padding: 35px 0 0;
+    width: 100%;
+    overflow-x: auto;
     .cards {
       display: grid;
       grid-template-columns: 1fr 1fr;
