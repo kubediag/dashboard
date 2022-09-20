@@ -90,10 +90,10 @@
               <th mat-header-cell *matHeaderCellDef></th>
               <td mat-cell *matCellDef="let element; let i = index" align="center">
                 <a mat-icon-button *ngIf="i > 0 && i < dataSource.value.data.length -1" (click)="remove(i)">
-                  <img width="13" src="./../../../assets//img/delete.png">
+                  <img width="13" src="assets/img/delete.png">
                 </a>
                 <a mat-icon-button *ngIf="i === dataSource.value.data.length -1" (click)="add()">
-                  <img width="13" src="./../../../assets//img/add.png">
+                  <img width="13" src="assets/img/add.png">
                 </a>
               </td>
             </ng-container>

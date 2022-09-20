@@ -5,7 +5,7 @@
     "ng": "ng",
     "start:frontend": "ng serve --port %npm_config_port% --host %npm_config_host%",
     "start:backend": "cd src/app/backend && npm run dev",
-    "build:frontend": "ng build",
+    "build:frontend": "ng build --base-href /kubediag/dashboard/",
     "build:backend": "cd src/app/backend && npm run build",
     "build": "npm run build:backend && npm run build:frontend",
     "watch": "ng build --watch --configuration development",

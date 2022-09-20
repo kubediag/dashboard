@@ -32,14 +32,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
 import { MatDialogModule } from '@angular/material/dialog';
 import { HttpClientModule } from '@angular/common/http';
-import { APP_BASE_HREF } from '@angular/common';
-
-//dynamic routePrefix
-const path = window.location.pathname;
-const routePrefix = path.replace(
-  /([\S]*)\/(diagnosis|event|operation|operationSet|trigger)[\/[\S]?]?/,
-  (match, p1) => p1
-);
 
 @NgModule({
   declarations: [
@@ -61,10 +53,7 @@ const routePrefix = path.replace(
     MatDialogModule,
     HttpClientModule,
   ],
-  providers: [
-    httpInterceptorProviders,
-    { provide: APP_BASE_HREF, useValue: routePrefix || '' },
-  ],
+  providers: [httpInterceptorProviders],
   bootstrap: [AppComponent],
 })
 export class AppModule {}
