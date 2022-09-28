@@ -17,11 +17,11 @@ deploy: manifests
 	kubectl apply -f config/deploy
 
 # Build the frontend docker image
-docker-build-frontend: test
+docker-build-frontend: 
 	docker build . -f ${DOCKERFILE_FRONTEND} -t ${IMG_FRONTEND}:${TAG}
 
 # Build the backend docker image
-docker-build-backend: test
+docker-build-backend: 
 	docker build . -f ${DOCKERFILE_BACKEND} -t ${IMG_BACKEND}:${TAG}
 
 # Push the docker image
